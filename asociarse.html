@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Asociarse - Villa Victoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" />
+    
+    <style>
+        :root {
+            --color-primary: #4A5568;
+            --color-accent: #30B5AA;
+            --color-bg-light: #f3f4f6;
+            --color-card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .form-card {
+            background-color: var(--color-card-bg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .input-focus:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.3);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-accent);
+        }
+
+        .large-logo {
+            width: 150px; 
+            height: 150px; 
+            margin-bottom: 0.75rem; 
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); 
+        }
+
+        .header-title {
+            font-weight: 700; 
+            letter-spacing: -0.01em; 
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <!-- Encabezado -->
+        <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
+            <img 
+                src="logo AAVV.png" 
+                alt="Logo Villa Victoria" 
+                class="large-logo mx-auto" 
+                onerror="this.onerror=null; this.src='https://placehold.co/170x170/ffffff/4A5568?text=Logo';" 
+            />
+            <div class="text-center">
+                <h1 class="header-title text-3xl uppercase leading-tight">
+                    Asociación Amigos Villa Victoria
+                </h1>
+                <p class="text-gray-500 text-xs font-light mt-2 px-4">
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
+                </p>
+            </div>
+        </div>
+
+        <div class="px-8 pt-8 text-center">
+            <h2 class="text-xl font-bold text-gray-700">Solicitud de Asociación</h2>
+            <p class="text-gray-500 text-sm mt-1">Complete los datos para iniciar la gestión.</p>
+        </div>
+
+        <form id="contactoForm" class="p-8 space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input type="text" name="nombre" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Tu nombre">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                    <input type="text" name="apellido" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Tu apellido">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Documento</label>
+                <input type="number" name="dni" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Número de documento">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                <input type="email" name="email" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="ejemplo@correo.com">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono / Celular</label>
+                <input type="tel" name="celular" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Cód. área + número">
+            </div>
+
+            <div id="loadingMsg" class="hidden text-center text-sm text-[var(--color-accent)] animate-pulse py-2">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Procesando solicitud...
+            </div>
+
+            <!-- Botón con margen superior extra para separar del texto -->
+            <button type="submit" id="btnSubmit" class="mt-4 btn-primary w-full text-white font-semibold py-3.5 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center">
+                Continuar <i class="fas fa-paper-plane ml-2 text-sm opacity-80"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Modal de Pago -->
+    <div id="pagoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+                <i class="fas fa-university text-blue-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Atención</h3>
+            <p class="mt-4 text-gray-600 text-sm">
+                Para continuar con la asociación, debe proceder con el pago de la <b>cuota anual de $20.000</b> mediante transferencia bancaria:
+            </p>
+            
+            <div class="my-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-left space-y-3">
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Nombre de la cuenta</span>
+                    <span class="text-sm font-semibold text-gray-700 italic">Asoc Amigos de Villa Victoria</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Banco</span>
+                    <span class="text-sm font-semibold text-gray-700 italic">Banco Credicoop</span>
+                </div>
+                <div class="flex flex-col p-2 bg-white border-2 border-dashed border-[var(--color-accent)] rounded mt-2">
+                    <span class="text-[10px] uppercase font-bold text-[var(--color-accent)]">Alias de transferencia</span>
+                    <span class="text-lg font-black text-[var(--color-primary)] tracking-widest uppercase">VILLAVICTORIA.MDP</span>
+                </div>
+            </div>
+
+            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Informativo Final -->
+    <div id="infoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Solicitud Recibida</h3>
+            <p class="mt-4 text-gray-600 text-sm leading-relaxed mb-6">
+                Una vez que se hayan corroborado los datos y verificado el pago, nos pondremos en contacto para dar acceso al servicio.
+            </p>
+            <button id="btnCerrarTodo" class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('contactoForm');
+        const pagoModal = document.getElementById('pagoModal');
+        const infoModal = document.getElementById('infoModal');
+        const btnAceptarPago = document.getElementById('btnAceptarPago');
+        const btnCerrarTodo = document.getElementById('btnCerrarTodo');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loadingMsg.classList.remove('hidden');
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-50');
+
+            setTimeout(() => {
+                loadingMsg.classList.add('hidden');
+                pagoModal.classList.remove('hidden');
+                pagoModal.classList.add('flex');
+            }, 1200);
+        });
+
+        btnAceptarPago.addEventListener('click', () => {
+            pagoModal.classList.add('hidden');
+            pagoModal.classList.remove('flex');
+            infoModal.classList.remove('hidden');
+            infoModal.classList.add('flex');
+        });
+
+        btnCerrarTodo.addEventListener('click', () => {
+            infoModal.classList.add('hidden');
+            infoModal.classList.remove('flex');
+            form.reset();
+            btnSubmit.disabled = false;
+            btnSubmit.classList.remove('opacity-50');
+        });
+    </script>
+</body>
+</html>
