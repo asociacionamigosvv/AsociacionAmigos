@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muestras y Programación Villa Victoria</title>
+    <link rel="icon" href="logo favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        :root {
+            --color-primary: #4A5568;
+            --color-accent: #30B5AA;
+            --color-bg-light: #f3f4f6;
+            --color-card-bg: #ffffff;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+        }
+
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: var(--color-card-bg);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #menuView,
+        #dataView {
+            flex: 1;
+            position: relative;
+        }
+
+        .flip-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+
+        .flip-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flip-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .menu-button {
+            width: 100%;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: white;
+            text-align: left;
+            border: 2px solid transparent;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.02);
+        }
+
+        .back-face {
+            transform: rotateY(180deg);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .muestra-card {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background-color: var(--color-card-bg);
+        }
+
+        .muestra-card.bg-green-100-card {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+
+        @keyframes blink-green {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 25px 8px #059669;
+            }
+        }
+
+        .muestra-card.blinking-card {
+            animation: blink-green 1.5s ease-in-out infinite;
+        }
+
+        .tag-badge.highlighted-badge {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            border: 2px solid #10b981;
+            border-radius: 0.75rem;
+        }
+
+        .muestra-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease-in-out, padding 0.6s ease-in-out;
+            padding: 0 1.25rem;
+            background-color: #fcfcfc;
+        }
+
+        .muestra-card.open .muestra-content {
+            max-height: 1200px;
+            padding: 1rem 1.25rem 1.5rem;
+        }
+
+        .chevron {
+            transition: transform 0.4s ease-out;
+            color: var(--color-primary);
+            font-size: 1rem;
+        }
+
+        .muestra-card.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .header-title {
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .detalle-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .tag-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            margin-right: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-container,
+        .programacion-table,
+        .programacion-table th,
+        .programacion-table td {
+            display: none !important;
+        }
+
+        .large-logo {
+            width: 150px; 
+            height: 150px; 
+            margin-bottom: 0.75rem; 
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); 
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--color-primary);
+            max-width: 400px;
+            width: 90%;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+            color: white;
+            border: 4px solid var(--color-accent);
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Estilo específico para el modal de carga (fondo blanco para mantener diseño original) */
+        .upload-modal-content {
+            background-color: white;
+            max-width: 400px;
+            width: 90%;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .modal-overlay.open .upload-modal-content {
+            transform: scale(1);
+        }
+
+        /* Estilo específico para el modal de estado de carga (similar a up_loadform.html) */
+        .upload-status-content {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 350px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo-modal {
+            filter: brightness(0) invert(1);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            box-shadow: none;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--color-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--color-accent);
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.5);
+        }
+
+        .input-disabled {
+            background-color: #e5e7eb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        /* Estilos específicos para el input file del upload form */
+        input[type="file"]::-webkit-file-upload-button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Modal de Historial (Existente) -->
+    <div id="historyModal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col" style="max-height: 80vh;">
+            <h3 class="text-xl font-extrabold text-white mb-4 border-b border-[var(--color-accent)] pb-2">
+                Mi Historial de Pagos
+            </h3>
+
+            <div id="historyList" class="overflow-y-auto pr-2 space-y-3 mb-6 custom-scrollbar">
+                <p class="text-sm text-gray-300 italic">Cargando movimientos...</p>
+            </div>
+
+            <button onclick="closeHistoryModal()"
+                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Nuevo Modal de Carga de Comprobante (Integrado) -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="upload-modal-content">
+            <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="mb-6 text-center">
+                <div class="w-16 h-16 bg-[#30B5AA]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-file-invoice-dollar text-[#30B5AA] text-2xl"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-800">Seleccionar comprobante</h1>
+                <p class="text-gray-500 text-sm mt-1">Informar comprobante de pago</p>
+            </div>
+
+            <form id="uploadForm" class="space-y-6">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2 ml-1">Seleccionar comprobante</label>
+                    <input type="file" id="myFile" required 
+                        class="w-full text-sm text-gray-500 border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-[#30B5AA]">
+                </div>
+
+                <button type="submit" id="btnUploadSubmit" class="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#30B5AA] shadow-lg shadow-[#30B5AA]/20 flex items-center justify-center gap-2 hover:bg-[#289E93] transition-all">
+                    <span>Continuar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Nuevo Modal de Estado de Carga (Integrado) -->
+    <div id="uploadStatusModal" class="modal-overlay">
+        <div class="upload-status-content">
+            <div id="uploadModalIcon" class="text-4xl mb-4">
+                <i class="fa-solid fa-circle-check text-[#30B5AA]"></i>
+            </div>
+            <h3 id="uploadModalTitle" class="text-xl font-bold mb-2">¡Éxito!</h3>
+            <p id="uploadModalMessage" class="text-gray-300 text-sm mb-6">El comprobante se envió correctamente.</p>
+            <button onclick="closeUploadStatusModal()" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-xs transition-colors text-white border border-white/20">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Bienvenida (Existente) -->
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="logo-modal mx-auto mb-4" />
+            <h3 class="text-2xl font-extrabold text-white mb-2">
+                ¡Bienvenido/a a Asociación Amigos Villa Victoria!
+            </h3>
+
+            <div id="modalMessage" class="text-gray-200 mb-6 text-sm">
+                <p>Descubra las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta
+                    es su guía rápida y en tiempo real.</p>
+            </div>
+
+            <button onclick="closeModal()"
+                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2">
+                Aceptar
+            </button>
+        </div>
+    </div>
+    <div class="app-container">
+
+        <header
+            class="p-5 bg-white text-gray-800 flex-shrink-0 relative flex flex-col items-center">
+
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="large-logo" />
+
+            <div class="text-center">
+                <p id="userGreeting" class="text-gray-400 text-sm font-medium mb-1">
+                    Cargando socio...
+                </p>
+
+                <h1 class="header-title text-3xl sm:text-4xl">
+                    Asociación Amigos Villa Victoria
+                </h1>
+                <p class="text-gray-500 text-sm font-light mt-1">
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General
+                    Pueyrredon.
+                </p>
+            </div>
+
+        </header>
+
+        <div id="menuView" class="p-4 flex-1 flex flex-col items-center space-y-6 bg-white]">
+
+            <p class="text-center text-xl font-bold text-gray-700 mt-4">Seleccione una opción</p>
+
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="muestraButtonFlip" onclick="animateButton(this, 'gestor_muestra')"
+                    class="flip-container h-full">
+                    <div class="flip-face menu-button border-[var(--color-accent)] hover:border-[var(--color-accent)]">
+                        <div class="flex items-center">
+                            <i class="fas fa-camera-retro text-4xl text-[var(--color-accent)] mr-4"></i>
+                            <div>
+                                <span class="text-xl font-bold text-gray-900 block">Muestras</span>
+                                <span class="text-sm text-gray-500">Listado de muestras.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-face back-face bg-white shadow-md">
+                        <p class="text-xl font-bold">Aguarde un instante...</p>
+                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-accent)]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="programacionButtonFlip" onclick="animateButton(this, 'gestor_programacion')"
+                    class="flip-container h-full">
+                    <div
+                        class="flip-face menu-button border-[var(--color-primary)] hover:border-[var(--color-primary)]">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-check text-4xl text-[var(--color-primary)] mr-4"></i>
+                            <div>
+                                <span class="text-xl font-bold text-gray-900 block">Programaciones</span>
+                                <span class="text-sm text-gray-500">Actividades Programadas.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-face back-face bg-white shadow-xl">
+                        <p class="text-xl font-bold">Aguarde un instante...</p>
+                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-[var(--color-primary)]"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full px-4" style="max-width: 384px; height: 120px;">
+                <div id="pagosButtonFlip" onclick="animateButton(this, 'registro_pagos')" class="flip-container h-full">
+                    <div class="flip-face menu-button border-red-500 hover:border-red-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-file-invoice-dollar text-4xl text-red-500 mr-4"></i>
+                            <div>
+                                <span class="text-xl font-bold text-gray-900 block">Registro de Pagos</span>
+                                <span class="text-sm text-gray-500">Informar un nuevo pago.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flip-face back-face bg-white shadow-xl">
+                        <p class="text-xl font-bold">Aguarde un instante...</p>
+                        <i class="fas fa-spinner fa-spin text-4xl mt-3 text-red-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1"></div>
+        </div>
+
+        <div id="dataView" class="hidden flex-1 relative bg-white overflow-y-auto">
+
+            <div
+                class="flex items-center justify-between p-3 border-b border-gray-200 sticky top-0 bg-white z-10 shadow-md flex-shrink-0">
+                <button onclick="changeView('menu')"
+                    class="text-gray-600 hover:text-[var(--color-primary)] transition duration-150 p-2 rounded-full">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                    <span class="sr-only">Volver al menú</span>
+                </button>
+                <h2 id="sectionTitle" class="text-xl font-bold text-gray-800 flex-1 text-center pr-10">
+                    SECCIÓN
+                </h2>
+            </div>
+
+            <div class="p-4">
+                <div id="dataList" class="space-y-4 pb-12">
+                    <div id="loadingSpinner" class="text-center p-12 bg-gray-100 rounded-lg shadow-inner">
+                        <i class="fas fa-spinner fa-spin text-5xl text-[var(--color-accent)]"></i>
+                        <p class="mt-4 text-gray-700 font-medium text-lg">Cargando datos...</p>
+                    </div>
+                </div>
+
+                <div id="noResults"
+                    class="hidden text-center p-10 bg-gray-100 rounded-lg shadow-md border border-gray-300 mt-6">
+                    <i class="fas fa-search-minus text-4xl text-gray-500"></i>
+                    <p class="mt-4 text-gray-700 font-bold">¡Uy! No hay datos activos para mostrar en esta sección.</p>
+                </div>
+
+                <div id="pagoFormContainer" class="hidden p-4 bg-white rounded-lg shadow-xl border border-gray-200">
+                    <h3 class="text-2xl font-extrabold text-[var(--color-primary)] mb-6 text-center">Registrar Nuevo
+                        Pago</h3>
+                    <form id="pagoForm" onsubmit="handlePagoSubmit(event)">
+
+                        <div class="form-group mb-4">
+                            <label for="pagoSocio">Socio</label>
+                            <input type="text" id="pagoSocio" name="socio" class="input-disabled" required readonly>
+                            <p class="text-xs text-gray-500 mt-1">Este campo se completa automáticamente con tu nombre.
+                            </p>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="pagoMonto">Monto ($)</label>
+                            <input type="number" id="pagoMonto" name="monto" min="0.01" step="0.01"
+                                placeholder="Ej: 1500.50" required>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="pagoFecha">Fecha de Pago</label>
+                            <input type="date" id="pagoFecha" name="fecha_pago" required>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="pagoReferencia">Referencia de Transacción <span
+                                    class="text-gray-500 font-normal text-sm">(Opcional)</span></label>
+                            <input type="text" id="pagoReferencia" name="referenciaTransaccion"
+                                placeholder="Ej: Factura #1234, ID de transacción">
+                        </div>
+
+                        <div class="form-group mb-6">
+                            <label for="pagoTipo">Tipo de Pago</label>
+                            <select id="pagoTipo" name="tipoPago" required>
+                                <option value="">Seleccione un tipo</option>
+                                <option value="MercadoPago">MercadoPago</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+
+                        <button type="button" id="btnOpenUpload" onclick="up_loadform()"
+                            class="w-full mb-4 py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
+                            Subir comprobante de pago
+                        </button>
+
+                        <button type="button" onclick="fetchAndRenderHistory()"
+                            class="w-full mb-4 py-3 px-4 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition duration-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-history"></i> Ver historial de pagos
+                        </button>
+
+                        <button type="submit" id="submitPagoButton"
+                            class="w-full py-3 px-4 bg-red-500 text-white font-bold rounded-lg shadow-lg hover:bg-red-600 transition duration-200 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:bg-gray-400">
+                            Registrar Pago
+                        </button>
+                    </form>
+
+                    <div id="pagoMessage" class="mt-4 p-3 rounded-lg text-sm font-medium hidden"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="p-3 text-center text-xs text-gray-500 border-t mt-auto bg-gray-50 flex-shrink-0">
+            <p class="text-gray-600 font-medium mb-1">Villa Victoria</p>
+            <p class="mt-1">Matheu 1851, Mar del Plata, Argentina</p>
+            <p>Email: <a href="mailto:villavictoria100@gmail.com"
+                    class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
+            <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank"
+                    class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a>
+            </p>
+            <p class="mt-2 text-gray-400">&copy; 2025 Villa Victoria.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const APPSSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL1RpCbeNhzimjHPUR8WAi8hd9ImwWpO19B2lfAG8m6tfq84xQ_QC1TRJydDobA1_lsQ/exec';
+        // URL Específica para la carga de comprobantes (copiada de up_loadform.html)
+        const UPLOAD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwd2okmgCC39zP33EDcYuruvrJJANoMzSXFSrDIIdWteVsje5GaA-DX324rU7NYTgq-/exec';
+
+        const dataList = document.getElementById('dataList');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const noResults = document.getElementById('noResults');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const menuView = document.getElementById('menuView');
+        const dataView = document.getElementById('dataView');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const userGreetingEl = document.getElementById('userGreeting');
+        const pagoFormContainer = document.getElementById('pagoFormContainer');
+        const pagoSocioInput = document.getElementById('pagoSocio');
+        const pagoFechaInput = document.getElementById('pagoFecha');
+        const pagoMessageEl = document.getElementById('pagoMessage');
+        const submitPagoButton = document.getElementById('submitPagoButton');
+
+        // Elementos del Modal de Subida
+        const uploadForm = document.getElementById('uploadForm');
+        const btnUploadSubmit = document.getElementById('btnUploadSubmit');
+        const uploadStatusModal = document.getElementById('uploadStatusModal');
+
+        let allData = [];
+        let currentSheet = null;
+        let auth = null;
+        let loggedInUserName = 'Invitado';
+
+        function clearSessionData() {
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('userId');
+            console.log("Datos de sesión limpiados al cerrar/navegar.");
+        }
+
+        function clearLocalStorageOnClose() {
+            clearSessionData();
+        }
+
+        window.addEventListener('beforeunload', clearLocalStorageOnClose);
+
+        function updateHeaderGreeting(userName) {
+            if (userGreetingEl) {
+                userGreetingEl.textContent = `Socio: ${userName}`;
+            }
+        }
+
+        async function showWelcomeModal(userName) {
+            if (!localStorage.getItem('welcomeModalShown')) {
+
+                let todayEvent = null;
+                const todayStr = getTodayDateString();
+
+                try {
+                    const programacion = await fetchSheetData('gestor_programacion');
+
+                    if (programacion && programacion.length > 0) {
+                        todayEvent = programacion.find(item =>
+                            normalizeDate(item.fecha) === todayStr
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error al cargar datos para el modal:', error);
+                }
+
+                const greetingText = userName === 'Invitado' ? '¡Bienvenido/a al Centro Cultural!' : `¡Hola, ${userName}!`;
+                welcomeModal.querySelector('h3').textContent = greetingText;
+
+
+                if (todayEvent) {
+                    const titulo = todayEvent.titulo || 'Evento Cultural';
+                    const rawHora = todayEvent.hora || 'todo el día';
+                    const hora = rawHora.replace(/\s*hs/i, '').trim();
+
+                    modalMessage.innerHTML = `
+                        <p class="font-bold text-white mb-4">
+                            ¡Hoy te comentamos que está programado el evento:
+                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
+                        </p>
+                        <p class="text-gray-200 text-sm">
+                            Descubrí las muestras y la programación completa navegando por las secciones.
+                        </p>
+                    `;
+                } else {
+                    modalMessage.innerHTML = `
+                        <p>Descubrí las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta es tu guía rápida y en tiempo real.</p>
+                        <p class="mt-2 text-gray-300 text-xs">(Por el momento, no hay eventos de programación exclusivos para hoy).</p>
+                    `;
+                }
+
+                welcomeModal.classList.add('open');
+            }
+        }
+
+        function closeModal() {
+            welcomeModal.classList.remove('open');
+            localStorage.setItem('welcomeModalShown', 'true');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const storedName = localStorage.getItem('fullName');
+            let userName = storedName;
+
+            if (!userName || userName === 'Invitado' || userName === '') {
+                console.log("Sesión no encontrada. Redirigiendo a index.html.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            loggedInUserName = userName;
+
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                if (firebaseConfig) {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                }
+            } catch (e) {
+                console.error("Fallo durante la inicialización de Firebase:", e);
+            }
+
+            updateHeaderGreeting(loggedInUserName);
+
+            pagoSocioInput.value = loggedInUserName;
+            pagoFechaInput.value = getTodayDateString();
+
+            changeView('menu');
+            await showWelcomeModal(loggedInUserName);
+        });
+
+        function normalizeDate(dateValue) {
+            if (!dateValue) return null;
+
+            let dateObj;
+
+            if (dateValue instanceof Date) {
+                const year = dateValue.getFullYear();
+                const month = dateValue.getMonth();
+                const day = dateValue.getDate();
+                dateObj = new Date(year, month, day, 12);
+            }
+            else if (typeof dateValue === 'string') {
+                const dateOnly = String(dateValue).split(' ')[0].trim();
+
+                if (dateOnly.includes('/')) {
+                    const parts = dateOnly.split('/');
+                    if (parts.length === 3) {
+                        dateObj = new Date(parts[2], parts[1] - 1, parts[0], 12);
+                    }
+                } else if (dateOnly.includes('-')) {
+                    const cleanDate = dateOnly.replace(/T.*Z$/, '');
+                    dateObj = new Date(cleanDate + 'T12:00:00');
+                }
+            }
+
+            if (dateObj && !isNaN(dateObj.getTime())) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            return null;
+        }
+
+        function formatDateForDisplay(dateValue) {
+            const normalized = normalizeDate(dateValue);
+            if (!normalized) return 'Sin Fecha';
+
+            const parts = normalized.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return normalized;
+        }
+
+        function getTodayDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function animateButton(flipContainer, sheetName) {
+
+            flipContainer.classList.add('flipped');
+
+            const buttons = document.querySelectorAll('.flip-container');
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+
+            setTimeout(() => {
+                changeView('data', sheetName);
+
+                flipContainer.classList.remove('flipped');
+                buttons.forEach(btn => btn.style.pointerEvents = 'auto');
+            }, 800);
+        }
+
+        function changeView(viewName, sheetName = null) {
+            menuView.classList.add('hidden');
+            dataView.classList.add('hidden');
+
+            pagoFormContainer.classList.add('hidden');
+            dataList.classList.remove('hidden');
+
+            if (viewName === 'menu') {
+                menuView.classList.remove('hidden');
+                sectionTitle.textContent = 'SECCIÓN';
+                dataList.innerHTML = '';
+            } else if (viewName === 'data' && sheetName) {
+                dataView.classList.remove('hidden');
+                currentSheet = sheetName;
+
+                if (sheetName === 'gestor_muestra') {
+                    sectionTitle.textContent = 'Listado de Muestras';
+                    fetchAndRenderData(sheetName);
+                } else if (sheetName === 'gestor_programacion') {
+                    sectionTitle.textContent = 'Actividades Programadas';
+                    fetchAndRenderData(sheetName);
+                } else if (sheetName === 'registro_pagos') {
+                    sectionTitle.textContent = 'Registro de Pagos';
+                    dataList.classList.add('hidden');
+                    loadingSpinner.classList.add('hidden');
+                    noResults.classList.add('hidden');
+                    pagoFormContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * (2 ** i)));
+                }
+            }
+        }
+
+        async function fetchSheetData(sheetName) {
+            const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=${sheetName}`;
+            const response = await fetchWithRetry(url);
+            const responseText = await response.text();
+
+            let data = {};
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                throw new Error(`Respuesta inválida (no JSON) al cargar ${sheetName}.`);
+            }
+
+            if (data.status === 'success' && Array.isArray(data.data)) {
+                return data.data.filter(item => {
+                    const valorActivo = String(item.ACTIVO || '').toUpperCase().trim();
+                    if (sheetName === 'gestor_muestra' || sheetName === 'gestor_programacion') {
+                        return valorActivo === 'SI';
+                    }
+                    return true;
+                });
+            } else {
+                throw new Error(data.message || `Error en el status al cargar ${sheetName}.`);
+            }
+        }
+
+        async function fetchAndRenderData(sheetName) {
+
+            if (sheetName === 'registro_pagos') return;
+
+            loadingSpinner.classList.remove('hidden');
+            dataList.classList.remove('hidden');
+            pagoFormContainer.classList.add('hidden');
+            dataList.innerHTML = '';
+            noResults.classList.add('hidden');
+
+            try {
+                const dataArray = await fetchSheetData(sheetName);
+
+                dataArray.sort((a, b) => {
+                    const keyA = a.fecha || Object.values(a)[0] || '';
+                    const keyB = b.fecha || Object.values(b)[0] || '';
+
+                    const dateA = normalizeDate(keyA);
+                    const dateB = normalizeDate(keyB);
+
+                    if (dateA && dateB) {
+                        return dateA.localeCompare(dateB);
+                    }
+                    return String(keyA).localeCompare(String(keyB));
+                });
+
+                allData = dataArray;
+                renderData(allData, sheetName);
+
+            } catch (error) {
+                console.error('Error al cargar la data:', error);
+
+                dataList.innerHTML = `
+                    <div class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md m-4" role="alert">
+                        <h4 class="font-bold">¡Error de Conexión o URL!</h4>
+                        <p>No se pudo cargar la data de <strong>${sheetName}</strong>. Detalle: ${error.message}</p>
+                        <p class="text-sm mt-1"><strong>ACLARACIÓN:</strong> Verifique la URL y el script de Apps Script.</p>
+                    </div>
+                `;
+            } finally {
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function getHoraColorClass(fechaStr, horaStr) {
+            const now = new Date();
+            let dateEvent = null;
+
+            let isoDateStr = normalizeDate(fechaStr);
+
+            if (!isoDateStr) {
+                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
+            }
+
+            try {
+                const cleanedHoraStr = String(horaStr).replace(/\s*hs/i, '').trim();
+                let timeParts = cleanedHoraStr.split(':');
+
+                if (timeParts.length === 2) {
+                    const h = String(parseInt(timeParts[0] || '0')).padStart(2, '0');
+                    const m = String(parseInt(timeParts[1] || '0')).padStart(2, '0');
+                    dateEvent = new Date(`${isoDateStr}T${h}:${m}:00`);
+                } else {
+                    dateEvent = new Date(`${isoDateStr}T23:59:00`);
+                }
+            } catch (e) {
+                dateEvent = new Date(`${isoDateStr}T23:59:00`);
+            }
+
+            if (isNaN(dateEvent.getTime())) {
+                return { cardClass: '', badgeClass: 'bg-gray-200 text-gray-700', iconClass: 'fas fa-clock', isHappening: false };
+            }
+
+            const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            nowDay.setHours(0, 0, 0, 0);
+
+            const eventDay = new Date(dateEvent.getFullYear(), dateEvent.getMonth(), dateEvent.getDate());
+            eventDay.setHours(0, 0, 0, 0);
+
+            const isToday = eventDay.getTime() === nowDay.getTime();
+
+            if (eventDay.getTime() < nowDay.getTime()) {
+                return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-history', isHappening: false };
+            }
+
+            if (isToday) {
+                const startTime = dateEvent.getTime();
+                const twoHoursLater = startTime + (2 * 60 * 60 * 1000);
+
+                if (now.getTime() < startTime) {
+                    return {
+                        cardClass: 'bg-green-100-card blinking-card',
+                        badgeClass: 'bg-green-600 text-white',
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true
+                    };
+                } else if (now.getTime() >= startTime && now.getTime() < twoHoursLater) {
+                    return {
+                        cardClass: 'bg-green-100-card blinking-card',
+                        badgeClass: 'bg-green-600 text-white',
+                        iconClass: 'fas fa-calendar-day',
+                        isHappening: true
+                    };
+                } else {
+                    return { cardClass: '', badgeClass: 'bg-red-100 text-red-700', iconClass: 'fas fa-check-circle', isHappening: false };
+                }
+            }
+
+            return { cardClass: '', badgeClass: 'bg-blue-100 text-blue-700', iconClass: 'fas fa-clock', isHappening: false };
+        }
+
+        function renderData(data, sheetName) {
+            dataList.innerHTML = '';
+
+            if (data.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            if (sheetName === 'gestor_muestra') {
+                renderMuestras(data);
+            } else if (sheetName === 'gestor_programacion') {
+                renderProgramacion(data);
+            }
+        }
+
+        function renderMuestras(muestras) {
+            muestras.forEach(muestra => {
+                const nombre = muestra.Nombre || muestra.nombre || Object.values(muestra)[0] || 'Sin Nombre';
+                const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
+                const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
+
+                const { cardClass } = getHoraColorClass(periodo, '23:59');
+
+                const card = document.createElement('div');
+                card.className = `muestra-card ${cardClass}`;
+
+                card.onclick = function () {
+                    toggleMuestra(this);
+                };
+
+                const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
+
+                card.innerHTML = `
+                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex items-center mb-2">
+                                <span class="tag-badge bg-green-100 text-green-700">
+                                    <i class="fas fa-calendar-alt mr-1"></i> ${periodo} 
+                                </span>
+                                </div>
+                            <h2 class="text-lg font-bold text-gray-900 mt-1">${nombre}</h2>
+                        </div>
+                        
+                        <div class="flex-shrink-0 pt-3">
+                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="muestra-content">
+                        <div class="text-base text-gray-700 leading-relaxed">
+                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
+                            <p class="text-sm detalle-content">${detalle}</p> 
+                        </div>
+                    </div>
+                `;
+                dataList.appendChild(card);
+            });
+        }
+
+        function renderProgramacion(programacion) {
+
+            const filteredProgramacion = programacion.filter(item => {
+                const { iconClass } = getHoraColorClass(item.fecha, item.hora);
+
+                if (iconClass === 'fas fa-history' || iconClass === 'fas fa-check-circle') {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (filteredProgramacion.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            filteredProgramacion.forEach(item => {
+                const titulo = item.titulo || 'Sin Título';
+                const hora = item.hora || 'Sin Hora';
+                const costo = item.costo || 'Consultar Costo';
+                const detalle = item.detalle || 'Detalle no especificado.';
+
+                const fechaDisplay = formatDateForDisplay(item.fecha);
+                const fechaInput = item.fecha;
+
+                const { cardClass, badgeClass, iconClass, isHappening } = getHoraColorClass(fechaInput, hora);
+
+                const highlightClass = isHappening ? 'highlighted-badge' : '';
+
+                const card = document.createElement('div');
+                card.className = `muestra-card ${cardClass} ${isHappening ? 'blinking-card' : ''}`;
+
+                card.onclick = function () {
+                    toggleMuestra(this);
+                };
+
+                const headerBgClass = isHappening ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
+
+                card.innerHTML = `
+                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex items-center mb-2">
+                                <span class="tag-badge bg-indigo-100 text-indigo-700 ${highlightClass}">
+                                    <i class="fas fa-calendar-alt mr-1"></i> ${fechaDisplay} 
+                                </span>
+                                <span class="tag-badge ${badgeClass} ${highlightClass}">
+                                    <i class="${iconClass} mr-1"></i> ${hora} 
+                                </span>
+                            </div>
+                            <h2 class="text-lg font-bold text-gray-900 mt-1">${titulo}</h2>
+                        </div>
+                        
+                        <div class="flex-shrink-0 pt-3">
+                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="muestra-content">
+                        <div class="text-base text-gray-700 leading-relaxed">
+                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
+                            <p class="text-sm detalle-content">${detalle}</p> 
+                            <div class="mt-4 border-t border-gray-100 pt-3">
+                                <span class="tag-badge bg-red-100 text-red-700 text-sm">
+                                    <i class="fas fa-hand-holding-usd mr-1"></i> Costo: ${costo}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                dataList.appendChild(card);
+            });
+        }
+
+        function toggleMuestra(card) {
+            const isOpen = card.classList.contains('open');
+
+            document.querySelectorAll('.muestra-card.open').forEach(openCard => {
+                if (openCard !== card) {
+                    openCard.classList.remove('open');
+                }
+            });
+
+            if (!isOpen) {
+                card.classList.add('open');
+            } else {
+                card.classList.remove('open');
+            }
+        }
+
+                async function handlePagoSubmit(event) {
+            event.preventDefault();
+
+            submitPagoButton.disabled = true;
+            submitPagoButton.textContent = 'Enviando...';
+            pagoMessageEl.classList.add('hidden');
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            const montoValue = formData.get('monto');
+
+            const pagoData = {
+                socio: formData.get('socio'),
+                monto: montoValue ? parseFloat(montoValue).toFixed(2) : '',
+                fecha_pago: formData.get('fecha_pago'),
+                referenciaTransaccion: formData.get('referenciaTransaccion'),
+                tipoPago: formData.get('tipoPago'),
+                userId: localStorage.getItem('userId')
+            };
+
+            const url = `${APPSSCRIPT_URL}?action=CREATE_RECORD&sheetName=registro_pagos`;
+
+            try {
+                const response = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ data: JSON.stringify(pagoData) })
+                });
+
+                const resultText = await response.text();
+                let result = {};
+                try {
+                    result = JSON.parse(resultText);
+                } catch (e) {
+                    throw new Error(`Respuesta inválida (no JSON) del Apps Script: ${resultText}`);
+                }
+
+                if (result.status === 'success') {
+                    pagoMessageEl.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+                    pagoMessageEl.classList.add('bg-green-100', 'text-green-700');
+                    pagoMessageEl.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${result.message || 'Pago registrado con éxito.'}`;
+                    form.reset();
+                    pagoSocioInput.value = loggedInUserName;
+                    pagoFechaInput.value = getTodayDateString();
+                    
+                    // REACTIVAR CAMPOS DESPUÉS DEL ENVÍO DEL PAGO
+                    enablePaymentFormFields();
+
+                } else {
+                    throw new Error(result.message || 'Error desconocido al registrar el pago.');
+                }
+
+            } catch (error) {
+                console.error('Error en el registro de pago:', error);
+                pagoMessageEl.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+                pagoMessageEl.classList.add('bg-red-100', 'text-red-700');
+                pagoMessageEl.innerHTML = `<i class="fas fa-times-circle mr-2"></i> Error: ${error.message}`;
+            } finally {
+                submitPagoButton.disabled = false;
+                submitPagoButton.textContent = 'Registrar Pago';
+            }
+        }
+        async function fetchAndRenderHistory() {
+            const historyModal = document.getElementById('historyModal');
+            const historyList = document.getElementById('historyList');
+            const currentUserId = localStorage.getItem('userId');
+
+            historyModal.classList.add('open');
+            historyList.innerHTML = `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i></div>`;
+
+            try {
+                const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    // USAMOS userId o id_user, lo que encuentre en el objeto
+                    const misPagos = result.data.filter(p => {
+                        const idEnFila = p.userId || p.id_user; // Probamos ambas por las dudas
+                        return String(idEnFila).trim() === String(currentUserId).trim();
+                    });
+
+                    if (misPagos.length === 0) {
+                        historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados todavía.</p>';
+                    } else {
+                        historyList.innerHTML = '';
+                        misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+
+                        misPagos.forEach(p => {
+                            const item = document.createElement('div');
+                            item.className = "bg-white/10 p-3 rounded-lg border border-white/10 flex justify-between items-center mb-2";
+                            item.innerHTML = `
+                        <div>
+                            <p class="text-[10px] text-gray-400 uppercase font-bold">${formatDateForDisplay(p.fecha_pago)}</p>
+                            <p class="text-lg font-bold text-[var(--color-accent)]">$ ${p.monto}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] bg-white/20 text-white px-2 py-1 rounded">
+                                ${p.tipo_pago || p.tipoPago || 'Pago'}
+                            </span>
+                        </div>`;
+                            historyList.appendChild(item);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                historyList.innerHTML = '<p class="text-red-400 text-xs text-center">Error al conectar con el servidor.</p>';
+            }
+        }
+
+        // --- FUNCIONES DEL MODAL DE UPLOAD ---
+
+        function up_loadform() {
+            document.getElementById('uploadModal').classList.add('open');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('open');
+        }
+        
+        function closeUploadStatusModal() {
+            uploadStatusModal.classList.remove('open');
+        }
+
+        function showUploadStatusModal(title, message, isError = false) {
+             const titleEl = document.getElementById('uploadModalTitle');
+             const msgEl = document.getElementById('uploadModalMessage');
+             const iconEl = document.getElementById('uploadModalIcon');
+             
+             titleEl.innerText = title;
+             msgEl.innerText = message;
+             
+             if (isError) {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-400"></i>';
+            } else {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-[#30B5AA]"></i>';
+            }
+            
+            uploadStatusModal.classList.add('open');
+        }
+
+        // Lógica de envío del formulario de upload
+        if(uploadForm) {
+            uploadForm.addEventListener('submit', e => {
+                e.preventDefault();
+
+                const originalContent = btnUploadSubmit.innerHTML;
+                btnUploadSubmit.disabled = true;
+                btnUploadSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Enviando...</span>';
+
+                const fileInput = document.getElementById('myFile');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                     alert("Por favor seleccione un archivo.");
+                     btnUploadSubmit.disabled = false;
+                     btnUploadSubmit.innerHTML = originalContent;
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function() {
+                    const base64Data = reader.result.split(',')[1];
+                    const payload = {
+                        file: base64Data,
+                        filename: file.name,
+                        mimeType: file.type
+                    };
+
+                    fetch(UPLOAD_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: new URLSearchParams(payload)
+                    })
+                    .then(() => {
+                        btnUploadSubmit.disabled = false;
+                        btnUploadSubmit.innerHTML = originalContent;
+                        uploadForm.reset();
+                        closeUploadModal();
+                        showUploadStatusModal('¡Listo!', 'Comprobante enviado correctamente.');
+                        
+                        // DESHABILITAR CAMPOS DEL FORMULARIO DE PAGO
+                        disablePaymentFormFields();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btnUploadSubmit.disabled = false;
+                        btnUploadSubmit.innerHTML = originalContent;
+                        closeUploadModal();
+                        showUploadStatusModal('Error', 'No se pudo enviar. Intentá de nuevo.', true);
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function disablePaymentFormFields() {
+            const fieldsIds = ['pagoMonto', 'pagoFecha', 'pagoReferencia', 'pagoTipo'];
+            fieldsIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.readonly = true;
+                    el.classList.add('bg-gray-100', 'cursor-not-allowed'); 
+                }
+            });
+            
+            const btnOpenUpload = document.getElementById('btnOpenUpload');
+            if(btnOpenUpload) {
+                btnOpenUpload.disabled = true;
+                btnOpenUpload.classList.add('opacity-50', 'cursor-not-allowed');
+                btnOpenUpload.innerText = 'Comprobante Cargado ✓';
+            }
+        }
+
+        function enablePaymentFormFields() {
+             const fieldsIds = ['pagoMonto', 'pagoFecha', 'pagoReferencia', 'pagoTipo'];
+            fieldsIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.disabled = false;
+                    el.classList.remove('bg-gray-100', 'cursor-not-allowed'); 
+                }
+            });
+            
+            const btnOpenUpload = document.getElementById('btnOpenUpload');
+            if(btnOpenUpload) {
+                btnOpenUpload.disabled = false;
+                btnOpenUpload.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnOpenUpload.innerText = 'Subir comprobante de pago';
+            }
+        }
+
+        // Función para cerrar el modal de historial
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('open');
+        }
+
+        // Vinculamos a window para que el HTML los vea
+        window.fetchAndRenderHistory = fetchAndRenderHistory;
+        window.closeHistoryModal = closeHistoryModal;
+
+        window.closeModal = closeModal;
+        window.changeView = changeView;
+        window.animateButton = animateButton;
+        window.handlePagoSubmit = handlePagoSubmit;
+        
+        // Exponemos las funciones del modal de upload
+        window.up_loadform = up_loadform;
+        window.closeUploadModal = closeUploadModal;
+        window.closeUploadStatusModal = closeUploadStatusModal;
+
+    </script>
+</body>
+
+</html>
