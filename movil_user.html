@@ -383,20 +383,21 @@
     </div>
 
     <!-- Modal de Bienvenida (Existente) -->
-    <div id="welcomeModal" class="modal-overlay">
-        <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
-            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="logo-modal mx-auto mb-4" />
-            <h3 class="text-2xl font-extrabold text-white mb-2">
+<div id="welcomeModal" class="modal-overlay">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center border-4 border-[var(--color-accent)] max-w-[90%] w-[400px]"> 
+            
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="w-32 h-32 mx-auto mb-4 object-contain" />
+            
+            <h3 class="text-2xl font-black text-gray-900 mb-2">
                 ¡Bienvenido/a a Asociación Amigos Villa Victoria!
             </h3>
 
-            <div id="modalMessage" class="text-gray-200 mb-6 text-sm">
-                <p>Descubra las muestras y la programación cultural que ofrece este espacio único en Mar del Plata. Esta
-                    es su guía rápida y en tiempo real.</p>
+            <div id="modalMessage" class="text-gray-600 mb-6 text-sm">
+                <p>Descubra las muestras y la programación cultural que ofrece este espacio único en Mar del Plata.</p>
             </div>
 
             <button onclick="closeModal()"
-                class="w-full py-2 px-4 bg-[var(--color-accent)] text-white font-bold rounded-lg shadow-md hover:bg-[#289E93] transition duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2">
+                class="w-full py-3 px-4 bg-[var(--color-accent)] text-white font-bold rounded-xl shadow-lg hover:bg-[#289E93] transition duration-200">
                 Aceptar
             </button>
         </div>
@@ -583,14 +584,14 @@
         </div>
 
         <footer class="p-3 text-center text-xs text-gray-500 border-t mt-auto bg-gray-50 flex-shrink-0">
-            <p class="text-gray-600 font-medium mb-1">Villa Victoria</p>
+            <p class="text-gray-600 font-medium mb-1">Asociación Amigos Villa Victoria</p>
             <p class="mt-1">Matheu 1851, Mar del Plata, Argentina</p>
-            <p>Email: <a href="mailto:villavictoria100@gmail.com"
-                    class="hover:text-[var(--color-primary)] transition">villavictoria100@gmail.com</a></p>
+            <p>Email: <a href="mailto:asociacionamigosvv@gmail.com"
+                    class="hover:text-[var(--color-primary)] transition">asociacionamigosvv@gmail.com</a></p>
             <p>Web: <a href="http://mardelplata.gob.ar/centroculturalvictoriaocampo" target="_blank"
                     class="hover:text-[var(--color-primary)] transition">mardelplata.gob.ar/centroculturalvictoriaocampo</a>
             </p>
-            <p class="mt-2 text-gray-400">&copy; 2025 Villa Victoria.</p>
+            <p class="mt-2 text-gray-400">&copy; 2026 Asociación Amigos Villa Victoria.</p>
         </footer>
     </div>
 
@@ -673,11 +674,11 @@
                     const hora = rawHora.replace(/\s*hs/i, '').trim();
 
                     modalMessage.innerHTML = `
-                        <p class="font-bold text-white mb-4">
+                        <p class="font-bold text-gray-800 mb-4">
                             ¡Hoy te comentamos que está programado el evento:
-                            <span class="text-[var(--color-accent)]">${titulo}</span> a las <span class="text-[var(--color-accent)]">${hora}</span>!
+                            <span class="text-gray-800 mb-4">${titulo}</span> a las <span class="text-gray-800 mb-4">${hora}</span>!
                         </p>
-                        <p class="text-gray-200 text-sm">
+                        <p class="text-gray-600 text-sm">
                             Descubrí las muestras y la programación completa navegando por las secciones.
                         </p>
                     `;
