@@ -285,13 +285,23 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
+            max-width: 100%;
+            /* Agregá esto para asegurar el margen */
             padding: 0.75rem;
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-sizing: border-box;
+            /* Fundamental: incluye el padding en el ancho total */
+            appearance: none;
+            /* Quita estilos raros de los navegadores móviles */
+            -webkit-appearance: none;
         }
-
+input[type="date"] {
+    min-height: 2.5rem; /* Le damos aire */
+    display: flex;
+    align-items: center;
+}
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -631,22 +641,22 @@
 
         // --- FUNCIONES DE VALIDACIÓN ---
 
-function validatePagoForm() {
-    const btnSubmit = document.getElementById('submitPagoButton');
-    const monto = document.getElementById('pagoMonto').value;
-    const fecha = document.getElementById('pagoFecha').value;
-    const tipo = document.getElementById('pagoTipo').value;
+        function validatePagoForm() {
+            const btnSubmit = document.getElementById('submitPagoButton');
+            const monto = document.getElementById('pagoMonto').value;
+            const fecha = document.getElementById('pagoFecha').value;
+            const tipo = document.getElementById('pagoTipo').value;
 
-    if (monto && fecha && tipo && isComprobanteOk) {
-        btnSubmit.disabled = false;
-        btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
-        btnSubmit.classList.add('bg-red-600', 'hover:bg-red-700');
-    } else {
-        btnSubmit.disabled = true;
-        btnSubmit.classList.add('bg-gray-400', 'cursor-not-allowed');
-        btnSubmit.classList.remove('bg-red-600', 'hover:bg-red-700');
-    }
-}
+            if (monto && fecha && tipo && isComprobanteOk) {
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btnSubmit.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                btnSubmit.disabled = true;
+                btnSubmit.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btnSubmit.classList.remove('bg-red-600', 'hover:bg-red-700');
+            }
+        }
 
         function clearSessionData() {
             localStorage.removeItem('fullName');
