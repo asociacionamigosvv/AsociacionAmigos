@@ -252,9 +252,9 @@
                     <i class="fas fa-plus-circle"></i> Nueva Programación
                 </button>
                 <button class="btn btn-custom-teal" onclick="showModal('socios')">
-                                       <i class="fas fa-plus-circle"></i> Nuevo Socio
+                    <i class="fas fa-plus-circle"></i> Nuevo Socio
                 </button>
-                
+
             </div>
         </div>
 
@@ -799,11 +799,11 @@
                 const data = await response.json();
 
                 setLoadingState(false);
-if (data.status === 'success' && data.actividad) {
-    const actividad = data.actividad;
-    // Usamos .id para todos porque el servidor ya lo normalizó
-    document.getElementById('actividadId').value = actividad.id; 
-    document.getElementById('actividadTipo').value = tipo;
+                if (data.status === 'success' && data.actividad) {
+                    const actividad = data.actividad;
+                    // Usamos .id para todos porque el servidor ya lo normalizó
+                    document.getElementById('actividadId').value = actividad.id;
+                    document.getElementById('actividadTipo').value = tipo;
 
                     // Estado Activo: En socios la columna es 'activo' (minúscula)
                     const valorActivoRaw = tipo === 'socios' ? actividad.activo : actividad.ACTIVO;
@@ -857,7 +857,16 @@ if (data.status === 'success' && data.actividad) {
                         document.getElementById('Nombre').value = actividad.Nombre || '';
                         document.getElementById('nro_dni').value = actividad.nro_dni || '';
                         document.getElementById('email').value = actividad.email || '';
-                        document.getElementById('f_cumple').value = actividad.f_cumple || '';
+                        
+                        // CORRECCIÓN PARA EL CUMPLEAÑOS:
+                        let cumple = actividad.f_cumple || '';
+                        // Si el dato viene con el formato largo (contiene una 'T' de la zona horaria)
+                        if (cumple.toString().includes('T')) {
+                            const partes = cumple.split('T')[0].split('-'); // Separa por guiones: [YYYY, MM, DD]
+                            cumple = `${partes[2]}/${partes[1]}`; // Lo arma como DD/MM
+                        }
+                        document.getElementById('f_cumple').value = cumple;
+                        
                         document.getElementById('tel_cel').value = actividad.tel_cel || '';
                         document.getElementById('lugar_residencia').value = actividad.lugar_residencia || '';
                     }
@@ -1047,29 +1056,29 @@ if (data.status === 'success' && data.actividad) {
         // =================================================================
         // RENDERIZADO DE TABLAS
         // =================================================================
-function renderTable(actividades, tipo) {
-    // 1. DETERMINAR QUÉ TABLA USAR
-    let tableId = '';
-    if (tipo.toLowerCase() === 'muestra') tableId = 'muestrasTable';
-    else if (tipo.toLowerCase() === 'socios') tableId = 'sociosTable';
-    else tableId = 'programacionesTable';
+        function renderTable(actividades, tipo) {
+            // 1. DETERMINAR QUÉ TABLA USAR
+            let tableId = '';
+            if (tipo.toLowerCase() === 'muestra') tableId = 'muestrasTable';
+            else if (tipo.toLowerCase() === 'socios') tableId = 'sociosTable';
+            else tableId = 'programacionesTable';
 
-    const tableBody = document.getElementById(tableId).querySelector('tbody');
-    tableBody.innerHTML = ''; 
+            const tableBody = document.getElementById(tableId).querySelector('tbody');
+            tableBody.innerHTML = '';
 
-    if (!actividades || actividades.length === 0) {
-        const numCols = tipo.toLowerCase() === 'socios' ? 8 : (tipo.toLowerCase() === 'muestra' ? 5 : 7);
-        tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay registros de ${tipo} disponibles.</td></tr>`;
-        return;
-    }
+            if (!actividades || actividades.length === 0) {
+                const numCols = tipo.toLowerCase() === 'socios' ? 8 : (tipo.toLowerCase() === 'muestra' ? 5 : 7);
+                tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay registros de ${tipo} disponibles.</td></tr>`;
+                return;
+            }
 
-    actividades.forEach(actividad => {
-        const row = tableBody.insertRow();
-        let nombrePrincipal = '';
+            actividades.forEach(actividad => {
+                const row = tableBody.insertRow();
+                let nombrePrincipal = '';
 
-        if (tipo.toLowerCase() === 'muestra') {
-            nombrePrincipal = actividad.nombre;
-            row.innerHTML = `
+                if (tipo.toLowerCase() === 'muestra') {
+                    nombrePrincipal = actividad.nombre;
+                    row.innerHTML = `
                 <td style="display:none;">${actividad.id}</td>
                 <td>${actividad.nombre}</td>
                 <td>${actividad.periodo}</td>
@@ -1079,16 +1088,24 @@ function renderTable(actividades, tipo) {
                     <button class="btn btn-sm btn-primary" onclick="showModal('Muestra', '${actividad.id}')"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-        } 
-        else if (tipo.toLowerCase() === 'socios') {
-            // USAR LAS PROPIEDADES QUE VIENEN DEL SERVIDOR (CON MAYÚSCULA SEGÚN TU GS)
-            nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
-            row.innerHTML = `
+                }
+else if (tipo.toLowerCase() === 'socios') {
+                    nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
+                    
+                    // Lógica para que el cumpleaños se vea como en la tabla (DD/MM)
+                    let cumpleDisplay = actividad.f_cumple || '-';
+                    if (cumpleDisplay.toString().includes('T')) {
+                        // Si viene el formato largo "2026-11-10T...", lo cortamos y damos vuelta
+                        const partes = cumpleDisplay.split('T')[0].split('-'); 
+                        cumpleDisplay = `${partes[2]}/${partes[1]}`; 
+                    }
+
+                    row.innerHTML = `
                 <td style="display:none;">${actividad.id}</td> 
                 <td>${nombrePrincipal}</td>
                 <td>${actividad.nro_dni || '-'}</td>
                 <td>${actividad.email || '-'}</td>
-                <td>${actividad.f_cumple || '-'}</td>
+                <td>${cumpleDisplay}</td>
                 <td>${actividad.tel_cel || '-'}</td>
                 <td>${actividad.lugar_residencia || '-'}</td>
                 <td><span class="badge ${actividad.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.activo}</span></td>
@@ -1096,11 +1113,11 @@ function renderTable(actividades, tipo) {
                     <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${actividad.id}')"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'socios', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-        } 
-        else { // Programación
-            nombrePrincipal = actividad.titulo;
-            const fechaDisplay = formatToDisplayDate(actividad.fecha);
-            row.innerHTML = `
+                }
+                else { // Programación
+                    nombrePrincipal = actividad.titulo;
+                    const fechaDisplay = formatToDisplayDate(actividad.fecha);
+                    row.innerHTML = `
                 <td style="display:none;">${actividad.id}</td>
                 <td>${fechaDisplay}</td>
                 <td>${actividad.hora}</td>
@@ -1112,9 +1129,9 @@ function renderTable(actividades, tipo) {
                     <button class="btn btn-sm btn-primary" onclick="showModal('Programacion', '${actividad.id}')"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Programacion', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
+                }
+            });
         }
-    });
-}
     </script>
 </body>
 
