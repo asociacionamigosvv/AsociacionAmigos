@@ -254,6 +254,9 @@
                 <button class="btn btn-custom-teal" onclick="showModal('socios')">
                     <i class="fas fa-plus-circle"></i> Nuevo Socio
                 </button>
+                <button class="btn btn-custom-teal" onclick="showModal('user')">
+                    <i class="fas fa-user-plus"></i> Nuevo Usuario
+                </button>
 
             </div>
         </div>
@@ -278,6 +281,13 @@
                 <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
                     role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('Socios')">
                     <i class="fas fa-users"></i> Socios
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button"
+                    role="tab" aria-controls="user" aria-selected="false" onclick="setActiveTab('user')">
+                    <i class="fas fa-user-shield"></i> Usuarios
                 </button>
             </li>
         </ul>
@@ -336,6 +346,23 @@
                                 <th scope="col">Celular</th>
                                 <th scope="col">Residencia</th>
                                 <th scope="col">Activo</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle" id="userTable">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="display:none;">ID</th>
+                                <th scope="col">Apellido</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Usuario</th>
+                                <th scope="col">Permiso</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -658,6 +685,36 @@
         <input type="text" class="form-control" name="lugar_residencia" id="lugar_residencia">
     </div>
 `;
+
+        const USER_FORM_HTML = `
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Apellido</label>
+            <input type="text" class="form-control" name="Apellido" id="Apellido" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" name="Nombre" id="Nombre" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Usuario (Login)</label>
+            <input type="text" class="form-control" name="Usuario" id="Usuario" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="Password" id="Password" required>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Permiso</label>
+        <select class="form-select" name="Permiso" id="Permiso" required>
+            <option value="ADMIN">ADMIN</option>
+            <option value="USER">USER</option>
+        </select>
+    </div>
+`;
         function togglePeriodoTexto(show) {
             const group = document.getElementById('periodoMuestraTextoGroup');
             group.style.display = show ? 'block' : 'none';
@@ -725,6 +782,7 @@
             const modalLabel = document.getElementById('actividadModalLabel');
             const formContent = document.getElementById('formContent');
             const form = document.getElementById('actividadForm');
+            const estadoActividadGroup = document.querySelector('input[name="activo"]').closest('.mb-3'); // Seleccionamos el contenedor del estado activo
 
             // Limpiar y configurar campos comunes
             form.reset();
@@ -733,12 +791,19 @@
             document.getElementById('actividadId').value = '';
             document.getElementById('saveActividadBtn').textContent = 'Guardar Cambios';
 
-            // Buscá dentro de showModal(tipo, id = null) y agregá el else if:
+            // Por defecto mostramos el campo de Estado Activo
+            estadoActividadGroup.style.display = 'block';
+
+            // Lógica de carga de HTML según el tipo de solapa
             if (tipo === 'Muestra') {
                 formContent.innerHTML = MUESTRA_FORM_HTML;
                 togglePeriodoTexto(false);
-            } else if (tipo === 'socios') { // <--- AGREGAR ESTO
+            } else if (tipo === 'socios') {
                 formContent.innerHTML = SOCIOS_FORM_HTML;
+            } else if (tipo === 'user') {
+                // --- AGREGADO PARA USUARIOS ---
+                formContent.innerHTML = USER_FORM_HTML;
+                estadoActividadGroup.style.display = 'none'; // Ocultamos "Activo (SI/NO)" porque la hoja 'user' no lo usa
             } else {
                 formContent.innerHTML = PROGRAMACION_FORM_HTML;
                 toggleCostoMonto(false);
@@ -751,8 +816,10 @@
                 readActividadById(id, tipo);
             } else {
                 modalLabel.textContent = `Crear Nueva ${tipo}`;
-                // Por defecto: Activo = SI
-                document.getElementById('activoSI').checked = true;
+                // Por defecto: Activo = SI (Solo si el campo está visible)
+                if (tipo !== 'user') {
+                    document.getElementById('activoSI').checked = true;
+                }
             }
 
             actividadModal.show();
@@ -857,7 +924,7 @@
                         document.getElementById('Nombre').value = actividad.Nombre || '';
                         document.getElementById('nro_dni').value = actividad.nro_dni || '';
                         document.getElementById('email').value = actividad.email || '';
-                        
+
                         // CORRECCIÓN PARA EL CUMPLEAÑOS:
                         let cumple = actividad.f_cumple || '';
                         // Si el dato viene con el formato largo (contiene una 'T' de la zona horaria)
@@ -866,9 +933,16 @@
                             cumple = `${partes[2]}/${partes[1]}`; // Lo arma como DD/MM
                         }
                         document.getElementById('f_cumple').value = cumple;
-                        
+
                         document.getElementById('tel_cel').value = actividad.tel_cel || '';
                         document.getElementById('lugar_residencia').value = actividad.lugar_residencia || '';
+                    }
+                    else if (tipo === 'user') {
+                        document.getElementById('Apellido').value = actividad.Apellido || '';
+                        document.getElementById('Nombre').value = actividad.Nombre || '';
+                        document.getElementById('Usuario').value = actividad.Usuario || '';
+                        document.getElementById('Password').value = actividad.Password || '';
+                        document.getElementById('Permiso').value = actividad.Permiso || 'USER';
                     }
                 } else {
                     showFeedback(`Error al obtener datos: ${data.message}`, false);
@@ -1061,13 +1135,22 @@
             let tableId = '';
             if (tipo.toLowerCase() === 'muestra') tableId = 'muestrasTable';
             else if (tipo.toLowerCase() === 'socios') tableId = 'sociosTable';
+            else if (tipo.toLowerCase() === 'user') tableId = 'userTable'; // <--- AGREGADO
             else tableId = 'programacionesTable';
 
-            const tableBody = document.getElementById(tableId).querySelector('tbody');
+            const tableElement = document.getElementById(tableId);
+            if (!tableElement) return; // Seguridad por si no encuentra la tabla
+
+            const tableBody = tableElement.querySelector('tbody');
             tableBody.innerHTML = '';
 
             if (!actividades || actividades.length === 0) {
-                const numCols = tipo.toLowerCase() === 'socios' ? 8 : (tipo.toLowerCase() === 'muestra' ? 5 : 7);
+                // Ajustamos el número de columnas para el mensaje de "No hay registros"
+                let numCols = 7;
+                if (tipo.toLowerCase() === 'socios') numCols = 8;
+                else if (tipo.toLowerCase() === 'muestra') numCols = 5;
+                else if (tipo.toLowerCase() === 'user') numCols = 6; // Apellido, Nombre, Usuario, Permiso, Acciones + ID oculto
+
                 tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay registros de ${tipo} disponibles.</td></tr>`;
                 return;
             }
@@ -1089,15 +1172,12 @@
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
                 }
-else if (tipo.toLowerCase() === 'socios') {
+                else if (tipo.toLowerCase() === 'socios') {
                     nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
-                    
-                    // Lógica para que el cumpleaños se vea como en la tabla (DD/MM)
                     let cumpleDisplay = actividad.f_cumple || '-';
                     if (cumpleDisplay.toString().includes('T')) {
-                        // Si viene el formato largo "2026-11-10T...", lo cortamos y damos vuelta
-                        const partes = cumpleDisplay.split('T')[0].split('-'); 
-                        cumpleDisplay = `${partes[2]}/${partes[1]}`; 
+                        const partes = cumpleDisplay.split('T')[0].split('-');
+                        cumpleDisplay = `${partes[2]}/${partes[1]}`;
                     }
 
                     row.innerHTML = `
@@ -1112,6 +1192,19 @@ else if (tipo.toLowerCase() === 'socios') {
                 <td class="action-btns">
                     <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${actividad.id}')"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'socios', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                </td>`;
+                }
+                else if (tipo.toLowerCase() === 'user') { // <--- NUEVO BLOQUE PARA USUARIOS
+                    nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
+                    row.innerHTML = `
+                <td style="display:none;">${actividad.id}</td>
+                <td>${actividad.Apellido || '-'}</td>
+                <td>${actividad.Nombre || '-'}</td>
+                <td>${actividad.Usuario || '-'}</td>
+                <td><span class="badge bg-info text-dark">${actividad.Permiso || 'USER'}</span></td>
+                <td class="action-btns">
+                    <button class="btn btn-sm btn-primary" onclick="showModal('user', '${actividad.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'user', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
                 }
                 else { // Programación
