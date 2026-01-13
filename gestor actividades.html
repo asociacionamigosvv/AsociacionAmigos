@@ -799,14 +799,11 @@
                 const data = await response.json();
 
                 setLoadingState(false);
-
-                if (data.status === 'success' && data.actividad) {
-                    const actividad = data.actividad;
-
-                    // 1. Campos Comunes e IDs
-                    // Importante: En Socios tu columna es 'id_socio'
-                    document.getElementById('actividadId').value = tipo === 'socios' ? actividad.id_socio : actividad.id;
-                    document.getElementById('actividadTipo').value = tipo;
+if (data.status === 'success' && data.actividad) {
+    const actividad = data.actividad;
+    // Usamos .id para todos porque el servidor ya lo normalizó
+    document.getElementById('actividadId').value = actividad.id; 
+    document.getElementById('actividadTipo').value = tipo;
 
                     // Estado Activo: En socios la columna es 'activo' (minúscula)
                     const valorActivoRaw = tipo === 'socios' ? actividad.activo : actividad.ACTIVO;
@@ -1050,76 +1047,74 @@
         // =================================================================
         // RENDERIZADO DE TABLAS
         // =================================================================
+function renderTable(actividades, tipo) {
+    // 1. DETERMINAR QUÉ TABLA USAR
+    let tableId = '';
+    if (tipo.toLowerCase() === 'muestra') tableId = 'muestrasTable';
+    else if (tipo.toLowerCase() === 'socios') tableId = 'sociosTable';
+    else tableId = 'programacionesTable';
 
-        function renderTable(actividades, tipo) {
-            const tableBody = document.getElementById(tipo === 'Muestra' ? 'muestrasTable' : 'programacionesTable').querySelector('tbody');
-            tableBody.innerHTML = ''; // Limpiar tabla
+    const tableBody = document.getElementById(tableId).querySelector('tbody');
+    tableBody.innerHTML = ''; 
 
-            if (!actividades || actividades.length === 0) {
-                // Se ajusta el colspan porque la columna ID está oculta (6-1=5, 8-1=7)
-                const numCols = tipo === 'Muestra' ? 5 : 7;
-                tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay actividades de ${tipo} registradas.</td></tr>`;
-                return;
-            }
+    if (!actividades || actividades.length === 0) {
+        const numCols = tipo.toLowerCase() === 'socios' ? 8 : (tipo.toLowerCase() === 'muestra' ? 5 : 7);
+        tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay registros de ${tipo} disponibles.</td></tr>`;
+        return;
+    }
 
-            actividades.forEach(actividad => {
-                const row = tableBody.insertRow();
+    actividades.forEach(actividad => {
+        const row = tableBody.insertRow();
+        let nombrePrincipal = '';
 
-                let nombrePrincipal = ''; // Para usar en la confirmación de eliminación
-
-                if (tipo === 'Muestra') {
-                    // MUESTRAS: 5 columnas + 1 (ID oculto) + 1 (acciones)
-                    nombrePrincipal = actividad.nombre;
-
-                    row.innerHTML = `
-                        <td style="display:none;">${actividad.id}</td>
-                        <td>${actividad.nombre}</td>
-                        <td>${actividad.periodo}</td>
-                        <td>${actividad.detalle}</td>
-                        <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm btn-primary" onclick="showModal('Muestra', '${actividad.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                        </td>
-                    `;
-                } else if (tipo === 'socios') {
-                    nombrePrincipal = `${actividad.Apellido}, ${actividad.Nombre}`;
-                    row.innerHTML = `
-        <td style="display:none;">${actividad.id_socio}</td> 
-        <td>${nombrePrincipal}</td>
-        <td>${actividad.nro_dni}</td>
-        <td>${actividad.email}</td>
-        <td>${actividad.f_cumple || '-'}</td>
-        <td>${actividad.tel_cel || '-'}</td>
-        <td>${actividad.lugar_residencia || '-'}</td>
-        <td><span class="badge ${actividad.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.activo}</span></td>
-        <td class="action-btns">
-            <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${actividad.id_socio}')" title="Editar"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id_socio}', 'socios', '${nombrePrincipal}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-        </td>
-    `;
-                } else { // Programacion
-                    // PROGRAMACION: 7 columnas + 1 (ID oculto) + 1 (acciones)
-                    nombrePrincipal = actividad.titulo;
-
-                    const fechaDisplay = formatToDisplayDate(actividad.fecha);
-
-                    row.innerHTML = `
-                        <td style="display:none;">${actividad.id}</td>
-                        <td>${fechaDisplay}</td>
-                        <td>${actividad.hora}</td>
-                        <td>${actividad.titulo}</td>
-                        <td>${actividad.detalle}</td>
-                        <td>${actividad.costo}</td>
-                        <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm btn-primary" onclick="showModal('Programacion', '${actividad.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Programacion', '${nombrePrincipal}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                        </td>
-                    `;
-                }
-            });
+        if (tipo.toLowerCase() === 'muestra') {
+            nombrePrincipal = actividad.nombre;
+            row.innerHTML = `
+                <td style="display:none;">${actividad.id}</td>
+                <td>${actividad.nombre}</td>
+                <td>${actividad.periodo}</td>
+                <td>${actividad.detalle}</td>
+                <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+                <td class="action-btns">
+                    <button class="btn btn-sm btn-primary" onclick="showModal('Muestra', '${actividad.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                </td>`;
+        } 
+        else if (tipo.toLowerCase() === 'socios') {
+            // USAR LAS PROPIEDADES QUE VIENEN DEL SERVIDOR (CON MAYÚSCULA SEGÚN TU GS)
+            nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
+            row.innerHTML = `
+                <td style="display:none;">${actividad.id}</td> 
+                <td>${nombrePrincipal}</td>
+                <td>${actividad.nro_dni || '-'}</td>
+                <td>${actividad.email || '-'}</td>
+                <td>${actividad.f_cumple || '-'}</td>
+                <td>${actividad.tel_cel || '-'}</td>
+                <td>${actividad.lugar_residencia || '-'}</td>
+                <td><span class="badge ${actividad.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.activo}</span></td>
+                <td class="action-btns">
+                    <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${actividad.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'socios', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                </td>`;
+        } 
+        else { // Programación
+            nombrePrincipal = actividad.titulo;
+            const fechaDisplay = formatToDisplayDate(actividad.fecha);
+            row.innerHTML = `
+                <td style="display:none;">${actividad.id}</td>
+                <td>${fechaDisplay}</td>
+                <td>${actividad.hora}</td>
+                <td>${actividad.titulo}</td>
+                <td>${actividad.detalle}</td>
+                <td>${actividad.costo}</td>
+                <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+                <td class="action-btns">
+                    <button class="btn btn-sm btn-primary" onclick="showModal('Programacion', '${actividad.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Programacion', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                </td>`;
         }
+    });
+}
     </script>
 </body>
 
