@@ -254,9 +254,6 @@
                 <button class="btn btn-custom-teal" onclick="showModal('socios')">
                     <i class="fas fa-plus-circle"></i> Nuevo Socio
                 </button>
-                <button class="btn btn-custom-teal" onclick="showModal('user')">
-                    <i class="fas fa-user-plus"></i> Nuevo Usuario
-                </button>
 
             </div>
         </div>
@@ -281,13 +278,6 @@
                 <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
                     role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('Socios')">
                     <i class="fas fa-users"></i> Socios
-                </button>
-            </li>
-
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user" type="button"
-                    role="tab" aria-controls="user" aria-selected="false" onclick="setActiveTab('user')">
-                    <i class="fas fa-user-shield"></i> Usuarios
                 </button>
             </li>
         </ul>
@@ -346,23 +336,6 @@
                                 <th scope="col">Celular</th>
                                 <th scope="col">Residencia</th>
                                 <th scope="col">Activo</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle" id="userTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="display:none;">ID</th>
-                                <th scope="col">Apellido</th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Usuario</th>
-                                <th scope="col">Permiso</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -475,7 +448,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // URL DE TU WEB APP (DEBE SER REEMPLAZADA DESPUÉS DE CADA IMPLEMENTACIÓN NUEVA)
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyrEzux6EllOMrfGRGcDv3A4NJ84DI0sDXvtvvPbZsFi-Nid03GxLJCy6O44yil7-okWw/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx45ovpaPJRJPrhevobtxFI4GBQ9ma8EUYN2qgI7xjkmr_RCyrHvJXXGOdUN1EU8V4prA/exec';
+        // ID PLANILLA USUARIOS
+        const USER_SPREADSHEET_ID = '1h3Q3aOYEsXqKC3xN4qj7K7SmkwpFQtZdd0POsZF77Dg';
 
         let actividadModal;
         let deleteConfirmModal;
@@ -507,30 +482,26 @@
          * @returns {string} Fecha en formato 'DD/MM/AAAA' o la original si es inválida.
          */
         function formatToDisplayDate(dateString) {
-            if (!dateString) return '';
+    if (!dateString) return '';
+    
+    // Si ya viene en formato DD/MM (ej: "15/05"), lo devolvemos tal cual
+    const regexDDMM = /^\d{1,2}\/\d{1,2}$/;
+    if (regexDDMM.test(dateString.toString())) {
+        return dateString;
+    }
 
-            // 1. Intentar crear un objeto Date a partir del string ISO que viene de Apps Script
-            const dateObj = new Date(dateString);
-
-            // Verificar si la fecha es válida
-            if (isNaN(dateObj)) {
-                // Si falla, intentamos la lógica de YYYY-MM-DD simple o devolvemos el original
-                const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
-                if (match) {
-                    // Formato YYYY-MM-DD simple
-                    return `${match[3]}/${match[2]}/${match[1]}`;
-                }
-                // Devolver el string original si no podemos parsearlo.
-                return dateString;
-            }
-
-            // 2. Si es una fecha válida (formato ISO), formateamos a DD/MM/AAAA usando UTC.
-            const day = String(dateObj.getUTCDate()).padStart(2, '0');
-            const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0'); // Meses son 0-based
-            const year = dateObj.getUTCFullYear();
-
-            return `${day}/${month}/${year}`;
-        }
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; 
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    
+    // Si es para socios, quizás solo querés DD/MM, 
+    // pero para Programación necesitás el año. 
+    // Vamos a devolver DD/MM/YYYY por defecto y en el render lo manejamos.
+    const year = date.getFullYear();
+    return `${day}/${month}`;
+}
 
         /**
          * Ordena las actividades por fecha (si existe) o ID, de más reciente a más antigua.
@@ -779,51 +750,75 @@
         }
 
         function showModal(tipo, id = null) {
-            const modalLabel = document.getElementById('actividadModalLabel');
-            const formContent = document.getElementById('formContent');
-            const form = document.getElementById('actividadForm');
-            const estadoActividadGroup = document.querySelector('input[name="activo"]').closest('.mb-3'); // Seleccionamos el contenedor del estado activo
+    const modalLabel = document.getElementById('actividadModalLabel');
+    const formContent = document.getElementById('formContent');
+    const form = document.getElementById('actividadForm');
+    const estadoActividadGroup = document.querySelector('input[name="activo"]').closest('.mb-3');
 
-            // Limpiar y configurar campos comunes
-            form.reset();
-            form.classList.remove('was-validated');
-            document.getElementById('actividadTipo').value = tipo;
-            document.getElementById('actividadId').value = '';
-            document.getElementById('saveActividadBtn').textContent = 'Guardar Cambios';
+    // Limpiamos TODO para que no queden errores de validación anteriores
+    form.reset();
+    form.classList.remove('was-validated'); 
+    
+    document.getElementById('actividadTipo').value = tipo;
+    document.getElementById('actividadId').value = id || '';
+    document.getElementById('saveActividadBtn').textContent = 'Guardar Cambios';
+    
+    estadoActividadGroup.style.display = 'block';
 
-            // Por defecto mostramos el campo de Estado Activo
-            estadoActividadGroup.style.display = 'block';
+    if (tipo === 'Muestra') {
+        formContent.innerHTML = MUESTRA_FORM_HTML;
+        togglePeriodoTexto(false);
+    } else if (tipo === 'socios') {
+        formContent.innerHTML = SOCIOS_FORM_HTML;
+    } else if (tipo === 'user') {
+        formContent.innerHTML = USER_FORM_HTML;
+        estadoActividadGroup.style.display = 'none';
+        
+        if (id) {
+            const filaSocio = Array.from(document.querySelectorAll('#sociosTable tbody tr')).find(tr => 
+                tr.cells[0].innerText === id.toString()
+            );
 
-            // Lógica de carga de HTML según el tipo de solapa
-            if (tipo === 'Muestra') {
-                formContent.innerHTML = MUESTRA_FORM_HTML;
-                togglePeriodoTexto(false);
-            } else if (tipo === 'socios') {
-                formContent.innerHTML = SOCIOS_FORM_HTML;
-            } else if (tipo === 'user') {
-                // --- AGREGADO PARA USUARIOS ---
-                formContent.innerHTML = USER_FORM_HTML;
-                estadoActividadGroup.style.display = 'none'; // Ocultamos "Activo (SI/NO)" porque la hoja 'user' no lo usa
-            } else {
-                formContent.innerHTML = PROGRAMACION_FORM_HTML;
-                toggleCostoMonto(false);
-                applyProgramacionMasks();
+            if (filaSocio) {
+                const nombreCompleto = filaSocio.cells[1].innerText.split(',');
+                const apellido = nombreCompleto[0].trim();
+                const nombre = nombreCompleto[1] ? nombreCompleto[1].trim() : '';
+
+                const inputApellido = document.getElementById('Apellido');
+                const inputNombre = document.getElementById('Nombre');
+                
+                inputApellido.value = apellido;
+                inputNombre.value = nombre;
+                inputApellido.readOnly = true;
+                inputNombre.readOnly = true;
+                inputApellido.style.backgroundColor = "#e9ecef";
+                inputNombre.style.backgroundColor = "#e9ecef";
+
+                const primeraLetraNombre = nombre.charAt(0).toLowerCase();
+                const apellidoLimpio = apellido.toLowerCase().replace(/\s+/g, '');
+                document.getElementById('Usuario').value = primeraLetraNombre + apellidoLimpio;
             }
-
-            if (id) {
-                modalLabel.textContent = `Editar ${tipo}`;
-                document.getElementById('saveActividadBtn').textContent = 'Actualizar';
-                readActividadById(id, tipo);
-            } else {
-                modalLabel.textContent = `Crear Nueva ${tipo}`;
-                // Por defecto: Activo = SI (Solo si el campo está visible)
-                if (tipo !== 'user') {
-                    document.getElementById('activoSI').checked = true;
-                }
-            }
-
-            actividadModal.show();
         }
+    } else {
+        formContent.innerHTML = PROGRAMACION_FORM_HTML;
+        toggleCostoMonto(false);
+        applyProgramacionMasks();
+    }
+
+    if (id && tipo !== 'user') {
+        modalLabel.textContent = `Editar ${tipo}`;
+        document.getElementById('saveActividadBtn').textContent = 'Actualizar';
+        readActividadById(id, tipo);
+    } else if (tipo === 'user') {
+        modalLabel.textContent = `Gestión de Usuario`;
+        document.getElementById('saveActividadBtn').textContent = 'Guardar Usuario';
+    } else {
+        modalLabel.textContent = `Crear Nueva ${tipo}`;
+        if (tipo !== 'user') document.getElementById('activoSI').checked = true;
+    }
+
+    actividadModal.show();
+}
 
         // =================================================================
         // FUNCIONES CRUD DEL FRONTEND 
@@ -957,63 +952,64 @@
          * Maneja el envío del formulario para crear o actualizar. (CREATE/UPDATE)
          */
         async function handleFormSubmission() {
-            const form = document.getElementById('actividadForm');
-            const actividadId = document.getElementById('actividadId').value;
-            const accion = actividadId ? 'UPDATE' : 'CREATE';
-            const tipo = document.getElementById('actividadTipo').value;
+    const form = document.getElementById('actividadForm');
+    const actividadId = document.getElementById('actividadId').value;
+    const tipo = document.getElementById('actividadTipo').value;
+    const accion = (tipo === 'user') ? 'CREATE_USER' : (actividadId ? 'UPDATE' : 'CREATE');
 
-            // 1. Validación de Formulario (Bootstrap)
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                showFeedback("Por favor, rellena los campos obligatorios.", false);
-                return;
-            }
-            form.classList.remove('was-validated');
+    // --- MEJORA DE VALIDACIÓN ---
+    // Buscamos solo los inputs que están VISIBLES dentro del modal
+    const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+    let formValido = true;
 
-            // 2. Validación mínima para campos dinámicos
-            if (tipo === 'Programacion') {
-                if (document.getElementById('costoFijo').checked && !document.getElementById('montoCostoProgramacion').value) {
-                    showFeedback("Debes ingresar el monto si la Programación tiene costo fijo.", false);
-                    document.getElementById('montoCostoProgramacion').focus();
-                    return;
-                }
-            }
-
-            setLoadingState(true, accion === 'UPDATE' ? 'Actualizando' : 'Creando');
-
-            try {
-                const formData = new FormData(form);
-                formData.append('action', accion);
-
-                // Si la acción es UPDATE, se requiere el ID de la actividad
-                if (accion === 'UPDATE') {
-                    formData.append('id', actividadId);
-                }
-
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                setLoadingState(false);
-
-                if (data.status === 'success') {
-                    if (actividadModal) actividadModal.hide();
-                    showFeedback(data.message, true);
-                    fetchActividades(); // Recargar datos de la tabla
-
-                } else {
-                    showFeedback(`Error (${accion}): ${data.message}`, false);
-                }
-
-            } catch (error) {
-                setLoadingState(false);
-                showFeedback(`Error de conexión al intentar ${accion}: ${error.message}`, false);
+    visibleInputs.forEach(input => {
+        // Solo validamos si el elemento es visible para el usuario
+        if (input.offsetParent !== null) { 
+            if (input.hasAttribute('required') && !input.value.trim()) {
+                formValido = false;
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
             }
         }
+    });
 
+    if (!formValido) {
+        form.classList.add('was-validated');
+        showFeedback("Por favor, rellena los campos obligatorios.", false);
+        return;
+    }
+    // ----------------------------
+
+    setLoadingState(true, 'Guardando');
+
+    try {
+        const formData = new FormData(form);
+        formData.append('action', accion);
+        if (actividadId) formData.append('id', actividadId);
+        // Enviamos el ID de la planilla de usuarios en el POST
+        formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
+
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        setLoadingState(false);
+
+        if (data.status === 'success') {
+            actividadModal.hide();
+            showFeedback(data.message, true);
+            fetchActividades();
+        } else {
+            showFeedback(`Error: ${data.message}`, false);
+        }
+    } catch (error) {
+        setLoadingState(false);
+        showFeedback(`Error de conexión: ${error.message}`, false);
+    }
+}
         /**
          * Prepara el modal de confirmación para eliminar.
          */
@@ -1041,6 +1037,8 @@
                 formData.append('action', 'DELETE');
                 formData.append('id', id);
                 formData.append('actividadTipo', tipo);
+                // También pasamos el ID de la planilla de usuarios por si hay que borrar vínculo
+                formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
 
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
@@ -1130,101 +1128,84 @@
         // =================================================================
         // RENDERIZADO DE TABLAS
         // =================================================================
-        function renderTable(actividades, tipo) {
-            // 1. DETERMINAR QUÉ TABLA USAR
-            let tableId = '';
-            if (tipo.toLowerCase() === 'muestra') tableId = 'muestrasTable';
-            else if (tipo.toLowerCase() === 'socios') tableId = 'sociosTable';
-            else if (tipo.toLowerCase() === 'user') tableId = 'userTable'; // <--- AGREGADO
-            else tableId = 'programacionesTable';
+function renderTable(actividades, tipo) {
+    let tableId = tipo === 'Muestra' ? 'muestrasTable' : 
+                  tipo === 'Socios' ? 'sociosTable' : 
+                  tipo === 'user' ? 'userTable' : 'programacionesTable';
+    
+    const tableBody = document.getElementById(tableId).querySelector('tbody');
+    tableBody.innerHTML = '';
 
-            const tableElement = document.getElementById(tableId);
-            if (!tableElement) return; // Seguridad por si no encuentra la tabla
+    actividades.forEach(act => {
+        const row = tableBody.insertRow();
+        const tipoLower = tipo.toLowerCase();
+        
+        // Badge de activo uniforme para todos
+        const badgeActivo = `<span class="badge ${act.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${act.activo}</span>`;
 
-            const tableBody = tableElement.querySelector('tbody');
-            tableBody.innerHTML = '';
+        if (tipoLower === 'socios') {
+            const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
+            const esActivo = act.activo === 'SI';
+            
+            // --- ARREGLO AQUÍ: Formateamos la fecha de cumple ---
+            const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
 
-            if (!actividades || actividades.length === 0) {
-                // Ajustamos el número de columnas para el mensaje de "No hay registros"
-                let numCols = 7;
-                if (tipo.toLowerCase() === 'socios') numCols = 8;
-                else if (tipo.toLowerCase() === 'muestra') numCols = 5;
-                else if (tipo.toLowerCase() === 'user') numCols = 6; // Apellido, Nombre, Usuario, Permiso, Acciones + ID oculto
-
-                tableBody.innerHTML = `<tr><td colspan="${numCols}" class="text-center text-muted py-4">No hay registros de ${tipo} disponibles.</td></tr>`;
-                return;
-            }
-
-            actividades.forEach(actividad => {
-                const row = tableBody.insertRow();
-                let nombrePrincipal = '';
-
-                if (tipo.toLowerCase() === 'muestra') {
-                    nombrePrincipal = actividad.nombre;
-                    row.innerHTML = `
-                <td style="display:none;">${actividad.id}</td>
-                <td>${actividad.nombre}</td>
-                <td>${actividad.periodo}</td>
-                <td>${actividad.detalle}</td>
-                <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+            row.innerHTML = `
+                <td style="display:none;">${act.id}</td> 
+                <td>${nombreSocio}</td>
+                <td>${act.nro_dni}</td>
+                <td>${act.email}</td>
+                <td>${fechaFormateada}</td>
+                <td>${act.tel_cel}</td>
+                <td>${act.lugar_residencia}</td>
+                <td>${badgeActivo}</td>
                 <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('Muestra', '${actividad.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Muestra', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                    <button class="btn btn-sm btn-warning" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario"><i class="fas fa-user-lock"></i></button>
+                    <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-                }
-                else if (tipo.toLowerCase() === 'socios') {
-                    nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
-                    let cumpleDisplay = actividad.f_cumple || '-';
-                    if (cumpleDisplay.toString().includes('T')) {
-                        const partes = cumpleDisplay.split('T')[0].split('-');
-                        cumpleDisplay = `${partes[2]}/${partes[1]}`;
-                    }
 
-                    row.innerHTML = `
-                <td style="display:none;">${actividad.id}</td> 
-                <td>${nombrePrincipal}</td>
-                <td>${actividad.nro_dni || '-'}</td>
-                <td>${actividad.email || '-'}</td>
-                <td>${cumpleDisplay}</td>
-                <td>${actividad.tel_cel || '-'}</td>
-                <td>${actividad.lugar_residencia || '-'}</td>
-                <td><span class="badge ${actividad.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.activo}</span></td>
+        } else if (tipoLower === 'muestra') {
+            row.innerHTML = `
+                <td style="display:none;">${act.id}</td>
+                <td>${act.nombre}</td>
+                <td>${act.periodo}</td>
+                <td>${act.detalle}</td>
+                <td>${badgeActivo}</td>
                 <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${actividad.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'socios', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                    <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-                }
-                else if (tipo.toLowerCase() === 'user') { // <--- NUEVO BLOQUE PARA USUARIOS
-                    nombrePrincipal = `${actividad.Apellido || ''}, ${actividad.Nombre || ''}`;
-                    row.innerHTML = `
-                <td style="display:none;">${actividad.id}</td>
-                <td>${actividad.Apellido || '-'}</td>
-                <td>${actividad.Nombre || '-'}</td>
-                <td>${actividad.Usuario || '-'}</td>
-                <td><span class="badge bg-info text-dark">${actividad.Permiso || 'USER'}</span></td>
+
+        } else if (tipoLower === 'user') {
+            row.innerHTML = `
+                <td style="display:none;">${act.id}</td>
+                <td>${act.Apellido}</td>
+                <td>${act.Nombre}</td>
+                <td>${act.Usuario}</td>
+                <td>${act.Permiso}</td>
                 <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('user', '${actividad.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'user', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                    <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-                }
-                else { // Programación
-                    nombrePrincipal = actividad.titulo;
-                    const fechaDisplay = formatToDisplayDate(actividad.fecha);
-                    row.innerHTML = `
-                <td style="display:none;">${actividad.id}</td>
-                <td>${fechaDisplay}</td>
-                <td>${actividad.hora}</td>
-                <td>${actividad.titulo}</td>
-                <td>${actividad.detalle}</td>
-                <td>${actividad.costo}</td>
-                <td><span class="badge ${actividad.ACTIVO_HTML === 'SI' ? 'bg-success' : 'bg-danger'}">${actividad.ACTIVO_HTML}</span></td>
+
+        } else {
+            // Caso Programación
+            row.innerHTML = `
+                <td style="display:none;">${act.id}</td>
+                <td>${formatToDisplayDate(act.fecha)}</td>
+                <td>${act.hora}</td>
+                <td>${act.titulo}</td>
+                <td>${act.detalle}</td>
+                <td>${act.costo}</td>
+                <td>${badgeActivo}</td>
                 <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('Programacion', '${actividad.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${actividad.id}', 'Programacion', '${nombrePrincipal}')"><i class="fas fa-trash-alt"></i></button>
+                    <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')"><i class="fas fa-trash-alt"></i></button>
                 </td>`;
-                }
-            });
         }
+    });
+}
     </script>
 </body>
 
