@@ -214,17 +214,36 @@
         </div>
     </div>
 
+    <!-- Modal de Socio Existente -->
+    <div id="errorModal"
+        class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                <i class="fas fa-user-times text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Socio ya existente</h3>
+            <p class="mt-4 text-gray-600 text-sm leading-relaxed mb-6">
+                Esta persona ya existe cargada en el sistema. Por favor, póngase en contacto a través de <b>asociacionamigosvv@gmail.com</b>
+            </p>
+            <button id="btnCerrarError"
+                class="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-gray-700 transition uppercase tracking-wider">
+                Entendido
+            </button>
+        </div>
+    </div>
+
     <script>
         const form = document.getElementById('contactoForm');
         const pagoModal = document.getElementById('pagoModal');
         const infoModal = document.getElementById('infoModal');
+        const errorModal = document.getElementById('errorModal');
         const btnAceptarPago = document.getElementById('btnAceptarPago');
         const btnCerrarTodo = document.getElementById('btnCerrarTodo');
+        const btnCerrarError = document.getElementById('btnCerrarError');
         const loadingMsg = document.getElementById('loadingMsg');
         const btnSubmit = document.getElementById('btnSubmit');
 
-        // URL del Script de Google Apps Script (Debe ser la URL de ejecución tras implementar)
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO_ABewXIzxLqYOmWdhzb5zkqfmzzE-GR5ONZVI21SWAO7YbY-ojf0Axc6fzRf8vX9Qg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRoZoXjb3DDUoUSVPOvhs-chZgASBdMVTsWUYY-Ki_K6ohj5QLG0DFNoATxrSjnZcHBg/exec";
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -236,21 +255,36 @@
             const formData = new FormData(form);
             const params = new URLSearchParams(formData).toString();
 
-            // Usamos una técnica de envío que no espera respuesta para evitar bloqueos de CORS
-            // Esto asegura que los datos se envíen al Script.
-            fetch(SCRIPT_URL + "?" + params, {
-                method: 'POST',
-                mode: 'no-cors' // Clave para evitar el bloqueo del navegador
-            });
+            // Usamos JSONP para saltear el bloqueo de CORS y poder LEER la respuesta del servidor
+            const script = document.createElement('script');
+            // Agregamos un callback para que el servidor nos responda llamando a una función
+            script.src = `${SCRIPT_URL}?${params}&callback=procesarRespuesta`;
+            document.body.appendChild(script);
+        });
 
-            // Forzamos la apertura del modal después de un breve delay
-            // Así el usuario no se queda esperando infinitamente
-            setTimeout(() => {
-                loadingMsg.classList.add('hidden');
+        // Función global que llamará el Script de Google
+        window.procesarRespuesta = function(respuesta) {
+            loadingMsg.classList.add('hidden');
+            
+            if (respuesta.status === "existe") {
+                errorModal.classList.remove('hidden');
+                errorModal.classList.add('flex');
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-50');
+            } else if (respuesta.status === "Success") {
                 pagoModal.classList.remove('hidden');
                 pagoModal.classList.add('flex');
-            }, 1500);
-        });
+            } else {
+                // Si hay algún otro error
+                alert("Hubo un problema: " + (respuesta.message || "Error desconocido"));
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-50');
+            }
+            
+            // Limpieza del tag script
+            const scripts = document.querySelectorAll('script[src*="callback=procesarRespuesta"]');
+            scripts.forEach(s => s.remove());
+        };
 
         btnAceptarPago.addEventListener('click', () => {
             pagoModal.classList.add('hidden');
@@ -265,6 +299,17 @@
             form.reset();
             btnSubmit.disabled = false;
             btnSubmit.classList.remove('opacity-50');
+        });
+
+        btnCerrarError.addEventListener('click', () => {
+            errorModal.classList.add('hidden');
+            errorModal.classList.remove('flex');
+        });
+
+        document.getElementById('f_cumple').addEventListener('input', function (e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2, 4);
+            e.target.value = v;
         });
     </script>
 </body>
