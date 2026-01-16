@@ -297,11 +297,14 @@
             /* Quita estilos raros de los navegadores móviles */
             -webkit-appearance: none;
         }
-input[type="date"] {
-    min-height: 2.5rem; /* Le damos aire */
-    display: flex;
-    align-items: center;
-}
+
+        input[type="date"] {
+            min-height: 2.5rem;
+            /* Le damos aire */
+            display: flex;
+            align-items: center;
+        }
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -332,6 +335,8 @@ input[type="date"] {
 </head>
 
 <body>
+
+
     <div id="historyModal" class="modal-overlay">
         <div class="modal-content overflow-hidden flex flex-col" style="max-height: 80vh;">
             <h3 class="text-xl font-extrabold text-white mb-4 border-b border-[var(--color-accent)] pb-2">
@@ -348,7 +353,22 @@ input[type="date"] {
             </button>
         </div>
     </div>
-
+    <div id="contactNoticeModal" class="modal-overlay">
+        <div class="upload-status-content">
+            <div class="text-4xl mb-4">
+                <i class="fa-solid fa-envelope-open-text text-[var(--color-accent)]"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2 text-white">Importante</h3>
+            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                Si encuentra dificultades para informar su pago, contáctese por correo electrónico a: <br>
+                <span class="text-[var(--color-accent)] font-bold">asociacionamigosvv@gmail.com</span>
+            </p>
+            <button onclick="closeContactNotice()"
+                class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-xs transition-colors text-white border border-white/20">
+                Continuar
+            </button>
+        </div>
+    </div>
     <div id="uploadModal" class="modal-overlay">
         <div class="upload-modal-content">
             <button onclick="closeUploadModal()"
@@ -531,7 +551,7 @@ input[type="date"] {
                 </div>
 
                 <div id="pagoFormContainer" class="hidden p-4 bg-white rounded-lg shadow-xl border border-gray-200">
-                    <h3 class="text-2xl font-extrabold text-[var(--color-primary)] mb-6 text-center">Registrar Nuevo
+                    <h3 class="text-2xl font-extrabold text-[var(--color-primary)] mb-6 text-center">Informar Nuevo
                         Pago</h3>
                     <form id="pagoForm" onsubmit="handlePagoSubmit(event)">
 
@@ -542,11 +562,15 @@ input[type="date"] {
                             </p>
                         </div>
 
-                        <div class="form-group mb-4">
-                            <label for="pagoMonto">Monto ($)</label>
-                            <input type="number" id="pagoMonto" name="monto" min="0.01" step="0.01"
-                                placeholder="Ej: 1500.50" required>
-                        </div>
+<div class="form-group mb-4">
+    <label for="pagoMonto">Monto a abonar</label>
+    <select id="pagoMonto" name="monto" required>
+        <option value="">Seleccione un monto</option>
+        <option value="10000">$ 10.000</option>
+        <option value="20000">$ 20.000</option>
+        <option value="50000">$ 50.000</option>
+    </select>
+</div>
 
                         <div class="form-group mb-4">
                             <label for="pagoFecha">Fecha de Pago</label>
@@ -567,7 +591,6 @@ input[type="date"] {
                                 <option value="MercadoPago">MercadoPago</option>
                                 <option value="Transferencia">Transferencia</option>
                                 <option value="Tarjeta">Tarjeta</option>
-                                <option value="Otro">Otro</option>
                             </select>
                         </div>
 
@@ -584,7 +607,7 @@ input[type="date"] {
 
                         <button type="submit" id="submitPagoButton" disabled
                             class="w-full py-3 px-4 bg-gray-400 text-white font-bold rounded-lg shadow-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:cursor-not-allowed">
-                            Registrar Pago
+                            Informar Pago
                         </button>
                     </form>
 
@@ -641,22 +664,22 @@ input[type="date"] {
 
         // --- FUNCIONES DE VALIDACIÓN ---
 
-        function validatePagoForm() {
-            const btnSubmit = document.getElementById('submitPagoButton');
-            const monto = document.getElementById('pagoMonto').value;
-            const fecha = document.getElementById('pagoFecha').value;
-            const tipo = document.getElementById('pagoTipo').value;
+function validatePagoForm() {
+    const btnSubmit = document.getElementById('submitPagoButton');
+    const monto = document.getElementById('pagoMonto').value; // Esto tomará el 10000, 20000 o 50000
+    const fecha = document.getElementById('pagoFecha').value;
+    const tipo = document.getElementById('pagoTipo').value;
 
-            if (monto && fecha && tipo && isComprobanteOk) {
-                btnSubmit.disabled = false;
-                btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                btnSubmit.classList.add('bg-red-600', 'hover:bg-red-700');
-            } else {
-                btnSubmit.disabled = true;
-                btnSubmit.classList.add('bg-gray-400', 'cursor-not-allowed');
-                btnSubmit.classList.remove('bg-red-600', 'hover:bg-red-700');
-            }
-        }
+    if (monto && fecha && tipo && isComprobanteOk) {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        btnSubmit.classList.add('bg-red-600', 'hover:bg-red-700');
+    } else {
+        btnSubmit.disabled = true;
+        btnSubmit.classList.add('bg-gray-400', 'cursor-not-allowed');
+        btnSubmit.classList.remove('bg-red-600', 'hover:bg-red-700');
+    }
+}
 
         function clearSessionData() {
             localStorage.removeItem('fullName');
@@ -867,6 +890,23 @@ input[type="date"] {
                     validatePagoForm(); // Revisamos estado al entrar
                 }
             }
+            if (sheetName === 'registro_pagos') {
+                // En lugar del alert, abrimos nuestro modal con estilo
+                document.getElementById('contactNoticeModal').classList.add('open');
+
+                sectionTitle.textContent = 'Registro de Pagos';
+                dataList.classList.add('hidden');
+                loadingSpinner.classList.add('hidden');
+                noResults.classList.add('hidden');
+                pagoFormContainer.classList.remove('hidden');
+                validatePagoForm();
+            }
+
+            // Al final de tu script, donde exponés las funciones a window, agregá:
+            function closeContactNotice() {
+                document.getElementById('contactNoticeModal').classList.remove('open');
+            }
+            window.closeContactNotice = closeContactNotice;
         }
 
         async function fetchWithRetry(url, options = {}, maxRetries = 3, delay = 1000) {
@@ -1243,7 +1283,18 @@ input[type="date"] {
             const currentUserId = localStorage.getItem('userId');
 
             historyModal.classList.add('open');
-            historyList.innerHTML = `<div class="text-center py-6"><i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i></div>`;
+            // Ponemos el mensaje de aviso y el spinner de carga
+            historyList.innerHTML = `
+        <div class="bg-blue-900/30 border-l-4 border-[var(--color-accent)] p-3 mb-4">
+            <p class="text-xs text-white leading-relaxed">
+                <i class="fas fa-info-circle mr-1"></i>
+                Para generar su historial de pagos, primero debe informar los pagos por este medio.
+            </p>
+        </div>
+        <div class="text-center py-6">
+            <i class="fas fa-spinner fa-spin text-3xl text-[var(--color-accent)]"></i>
+        </div>
+    `;
 
             try {
                 const url = `${APPSSCRIPT_URL}?action=READ_SHEET&sheetName=registro_pagos`;
@@ -1251,16 +1302,24 @@ input[type="date"] {
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    // USAMOS userId o id_user, lo que encuentre en el objeto
                     const misPagos = result.data.filter(p => {
-                        const idEnFila = p.userId || p.id_user; // Probamos ambas por las dudas
+                        const idEnFila = p.userId || p.id_user;
                         return String(idEnFila).trim() === String(currentUserId).trim();
                     });
 
+                    // Limpiamos el spinner pero MANTENEMOS el mensaje de aviso arriba
+                    const avisoHTML = `
+                <div class="bg-blue-900/30 border-l-4 border-[var(--color-accent)] p-3 mb-4">
+                    <p class="text-xs text-white leading-relaxed">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Para generar su historial de pagos, primero debe informar los pagos por este medio.
+                    </p>
+                </div>`;
+
                     if (misPagos.length === 0) {
-                        historyList.innerHTML = '<p class="text-center text-gray-300 text-sm py-4">No tenés pagos registrados todavía.</p>';
+                        historyList.innerHTML = avisoHTML + '<p class="text-center text-gray-300 text-sm py-4">No tiene pagos registrados todavía.</p>';
                     } else {
-                        historyList.innerHTML = '';
+                        historyList.innerHTML = avisoHTML; // Dejamos el aviso y sumamos los pagos
                         misPagos.sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
 
                         misPagos.forEach(p => {
