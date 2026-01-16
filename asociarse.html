@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asociarse - Villa Victoria</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" />
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" />
+
     <style>
         :root {
             --color-primary: #4A5568;
@@ -15,7 +17,7 @@
             --color-bg-light: #f3f4f6;
             --color-card-bg: #ffffff;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--color-bg-light);
@@ -50,36 +52,34 @@
         }
 
         .large-logo {
-            width: 150px; 
-            height: 150px; 
-            margin-bottom: 0.75rem; 
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); 
+            width: 150px;
+            height: 150px;
+            margin-bottom: 0.75rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .header-title {
-            font-weight: 700; 
-            letter-spacing: -0.01em; 
+            font-weight: 700;
+            letter-spacing: -0.01em;
             color: var(--color-primary);
         }
     </style>
 </head>
+
 <body>
 
     <div class="form-card">
         <!-- Encabezado -->
         <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
-            <img 
-                src="logo AAVV.png" 
-                alt="Logo Villa Victoria" 
-                class="large-logo mx-auto" 
-                onerror="this.onerror=null; this.src='https://placehold.co/170x170/ffffff/4A5568?text=Logo';" 
-            />
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="large-logo mx-auto"
+                onerror="this.onerror=null; this.src='https://placehold.co/170x170/ffffff/4A5568?text=Logo';" />
             <div class="text-center">
                 <h1 class="header-title text-3xl leading-tight">
                     Asociación Amigos Villa Victoria
                 </h1>
                 <p class="text-gray-500 text-xs font-light mt-2 px-4">
-                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General Pueyrredon.
+                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General
+                    Pueyrredon.
                 </p>
             </div>
         </div>
@@ -93,38 +93,52 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                    <input type="text" name="nombre" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Su nombre">
+                    <input type="text" name="nombre" required
+                        class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                        placeholder="Su nombre">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
-                    <input type="text" name="apellido" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Su apellido">
+                    <input type="text" name="apellido" required
+                        class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                        placeholder="Su apellido">
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Documento</label>
-                <input type="number" name="dni" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Número de documento">
+                <input type="number" name="dni" required
+                    class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                    placeholder="Número de documento">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Lugar de residencia</label>
-                <input type="text" name="residencia" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Su residencia">
+                <input type="text" name="residencia" required
+                    class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                    placeholder="Su residencia">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Día de cumpleaños</label>
-                <input type="text" name="f_cumple" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Su cumpleaños ejemplo 15/08">
+                <input type="text" id="f_cumple" name="f_cumple" required
+                    class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                    placeholder="DD/MM" maxlength="5">
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                <input type="email" name="email" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="ejemplo@correo.com">
+                <input type="email" name="email" required
+                    class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                    placeholder="ejemplo@correo.com">
             </div>
 
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono / Celular</label>
-                <input type="tel" name="celular" required class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="Cód. área + número">
+                <input type="tel" name="celular" required
+                    class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                    placeholder="Cód. área + número">
             </div>
 
             <div id="loadingMsg" class="hidden text-center text-sm text-[var(--color-accent)] animate-pulse py-2">
@@ -132,55 +146,68 @@
             </div>
 
             <!-- Botón con margen superior extra para separar del texto -->
-            <button type="submit" id="btnSubmit" class="mt-4 btn-primary w-full text-white font-semibold py-3.5 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center">
+            <button type="submit" id="btnSubmit"
+                class="mt-4 btn-primary w-full text-white font-semibold py-3.5 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300 flex items-center justify-center">
                 Continuar <i class="fas fa-paper-plane ml-2 text-sm opacity-80"></i>
             </button>
         </form>
     </div>
 
     <!-- Modal de Pago -->
-    <div id="pagoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+    <div id="pagoModal"
+        class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-                <i class="fas fa-university text-blue-600 text-2xl"></i>
+                <i class="fas fa-exclamation-triangle text-blue-600 text-2xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-800">Atención</h3>
             <p class="mt-4 text-gray-600 text-sm">
-                Para continuar con la asociación, debe proceder con el pago de la <b>cuota anual de $20.000</b> mediante transferencia bancaria:
+                Para continuar con la asociación, debe proceder con el pago de la <b>cuota anual de $20.000</b> mediante
+                transferencia bancaria ó pago efectivo:
             </p>
-            
+
             <div class="my-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-left space-y-3">
                 <div class="flex flex-col">
                     <span class="text-[10px] uppercase font-bold text-gray-400">Nombre de la cuenta</span>
                     <span class="text-sm font-semibold text-gray-700 italic">Asoc Amigos de Villa Victoria</span>
+
                 </div>
                 <div class="flex flex-col">
                     <span class="text-[10px] uppercase font-bold text-gray-400">Banco</span>
                     <span class="text-sm font-semibold text-gray-700 italic">Banco Credicoop</span>
                 </div>
-                <div class="flex flex-col p-2 bg-white border-2 border-dashed border-[var(--color-accent)] rounded mt-2">
-                    <span class="text-[10px] uppercase font-bold text-[var(--color-accent)]">Alias de transferencia</span>
-                    <span class="text-lg font-black text-[var(--color-primary)] tracking-widest uppercase">VILLAVICTORIA.MDP</span>
+                <div
+                    class="flex flex-col p-2 bg-white border-2 border-dashed border-[var(--color-accent)] rounded mt-2">
+                    <span class="text-[10px] uppercase font-bold text-[var(--color-accent)]">Alias de
+                        transferencia</span>
+                    <span
+                        class="text-lg font-black text-[var(--color-primary)] tracking-widest uppercase">VILLAVICTORIA.MDP</span>
                 </div>
-            </div>
 
-            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
-                Aceptar
+            </div>
+            <p class="mt-4 mb-6 text-gray-600 text-sm"> Una vez completada la transferencia bancaria / pago efectivo,
+                remitir el comprobante al email <b>asociacionamigosvv@gmail.com</b>
+            </p>
+
+            <button id="btnAceptarPago" class="mt-4 w-full bg-[var(--color-accent)] ..."> Aceptar
             </button>
         </div>
     </div>
 
     <!-- Modal Informativo Final -->
-    <div id="infoModal" class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
+    <div id="infoModal"
+        class="hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-8 text-center">
             <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
                 <i class="fas fa-check-circle text-green-600 text-2xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-800">Solicitud Recibida</h3>
             <p class="mt-4 text-gray-600 text-sm leading-relaxed mb-6">
-                Una vez que se hayan corroborado los datos y verificado el pago, nos pondremos en contacto para dar acceso al servicio.
+                Una vez que se hayan corroborado los datos y verificado el pago, nos pondremos en contacto para dar
+                acceso al servicio.
             </p>
-            <button id="btnCerrarTodo" class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
+            <button id="btnCerrarTodo"
+                class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
                 Cerrar
             </button>
         </div>
@@ -196,11 +223,11 @@
         const btnSubmit = document.getElementById('btnSubmit');
 
         // URL del Script de Google Apps Script (Debe ser la URL de ejecución tras implementar)
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO_ABewXIzxLqYOmWdhzb5zkqfmzzE-GR5ONZVI21SWAO7YbY-ojf0Axc6fzRf8vX9Qg/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO_ABewXIzxLqYOmWdhzb5zkqfmzzE-GR5ONZVI21SWAO7YbY-ojf0Axc6fzRf8vX9Qg/exec";
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            
+
             loadingMsg.classList.remove('hidden');
             btnSubmit.disabled = true;
             btnSubmit.classList.add('opacity-50');
@@ -240,4 +267,5 @@
         });
     </script>
 </body>
+
 </html>
