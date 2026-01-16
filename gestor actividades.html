@@ -274,12 +274,10 @@
                 </button>
             </li>
 
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
-                    role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('Socios')">
-                    <i class="fas fa-users"></i> Socios
-                </button>
-            </li>
+            <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
+                role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('socios')">
+                <i class="fas fa-users"></i> Socios
+            </button>
         </ul>
 
         <div class="tab-content p-3 border border-top-0 rounded-bottom-lg">
@@ -448,7 +446,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // URL DE TU WEB APP (DEBE SER REEMPLAZADA DESPUÉS DE CADA IMPLEMENTACIÓN NUEVA)
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby6Ellx0zcroDj7BimxZy6X9sFfIGlhd4T4dGufz4ogB2DoP1g0l9aML13DKDQ9bSqVBw/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzkrJHz0cUdn0_jWqU_YyBNJU_Rw8V7K2j8VQPtrOArNFcCvyIE1LpG9UcMZBktppWx6Q/exec';
         // ID PLANILLA USUARIOS
         const USER_SPREADSHEET_ID = '1h3Q3aOYEsXqKC3xN4qj7K7SmkwpFQtZdd0POsZF77Dg';
 
@@ -456,6 +454,7 @@
         let deleteConfirmModal;
         let actividadHoyModal; // Declaración de la variable para el modal de hoy
         let activeTab = 'Muestra';
+        let actividadesCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar Modales
@@ -855,6 +854,7 @@
                 setLoadingState(false);
 
                 if (data.status === 'success') {
+                    actividadesCache = data.actividades;
                     // Ordenar antes de renderizar (Más reciente a más antiguo)
                     const actividadesOrdenadas = sortActividades(data.actividades, activeTab);
                     renderTable(actividadesOrdenadas, activeTab);
@@ -972,74 +972,76 @@
         /**
  * Maneja el envío del formulario (Crear o Actualizar)
  */
-        async function handleFormSubmission() {
-            const form = document.getElementById('actividadForm');
-            const actividadId = document.getElementById('actividadId').value; // ID del Socio (ej: 1, 2, 3...)
-            const tipo = document.getElementById('actividadTipo').value;
-            const btnTexto = document.getElementById('saveActividadBtn').textContent;
+       async function handleFormSubmission() {
+    const form = document.getElementById('actividadForm');
+    const actividadId = document.getElementById('actividadId').value; // Este es el ID que viene del modal
+    const tipo = document.getElementById('actividadTipo').value;
+    const btnTexto = document.getElementById('saveActividadBtn').textContent;
 
-            let accion;
-            if (tipo === 'user') {
-                accion = btnTexto.includes('Actualizar') ? 'UPDATE' : 'CREATE_USER';
-            } else {
-                accion = actividadId ? 'UPDATE' : 'CREATE';
-            }
+    // 1. Definimos la acción correctamente según el tipo y el texto del botón
+    let accion;
+    if (tipo === 'user') {
+        // Si el botón dice "Guardar Usuario" es porque es uno nuevo (vínculo con socio)
+        // Si dice "Actualizar", es un UPDATE de un usuario que ya existe
+        accion = (btnTexto === 'Guardar Usuario') ? 'CREATE_USER' : 'UPDATE';
+    } else {
+        accion = actividadId ? 'UPDATE' : 'CREATE';
+    }
 
-            const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
-            let formValido = true;
-            visibleInputs.forEach(input => {
-                if (input.offsetParent !== null && input.hasAttribute('required') && !input.value.trim()) {
-                    formValido = false;
-                    input.classList.add('is-invalid');
-                } else {
-                    input.classList.remove('is-invalid');
-                }
-            });
-
-            if (!formValido) {
-                showFeedback("¡Epa! Te faltan completar campos obligatorios.", false);
-                return;
-            }
-
-            setLoadingState(true, 'Guardando cambios');
-
-            try {
-                const formData = new FormData(form);
-
-                // --- AQUÍ ESTÁ EL TRUCO PARA QUE COINCIDA EL ID ---
-                formData.append('action', accion);
-                formData.append('actividadTipo', tipo);
-
-                // Si es usuario, borramos cualquier ID previo y mandamos el del socio
-                if (tipo === 'user') {
-                    formData.set('id', actividadId); // Usamos .set para sobreescribir si existiera uno
-                } else if (actividadId) {
-                    formData.set('id', actividadId);
-                }
-                // ------------------------------------------------
-
-                formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
-
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                setLoadingState(false);
-
-                if (data.status === 'success') {
-                    actividadModal.hide();
-                    showFeedback("¡Listo! Guardado correctamente.", true);
-                    fetchActividades();
-                } else {
-                    showFeedback(`Error: ${data.message}`, false);
-                }
-            } catch (error) {
-                setLoadingState(false);
-                showFeedback(`Error de conexión: ${error.message}`, false);
-            }
+    // 2. Validación de campos (tu lógica actual)
+    const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+    let formValido = true;
+    visibleInputs.forEach(input => {
+        if (input.offsetParent !== null && input.hasAttribute('required') && !input.value.trim()) {
+            formValido = false;
+            input.classList.add('is-invalid');
+        } else {
+            input.classList.remove('is-invalid');
         }
+    });
+
+    if (!formValido) {
+        showFeedback("¡Epa! Te faltan completar campos obligatorios.", false);
+        return;
+    }
+
+    // 3. Preparación del envío
+    setLoadingState(true, 'Procesando datos');
+
+    try {
+        const formData = new FormData(form);
+        formData.append('action', accion);
+        formData.append('actividadTipo', tipo);
+        formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
+
+        // --- LÓGICA CRÍTICA PARA EL ID ---
+        // Si estamos creando un usuario, el 'actividadId' contiene el ID del socio.
+        // Lo seteamos como 'id' para que el backend sepa que ese es el ID de la fila/socio.
+        if (actividadId) {
+            formData.set('id', actividadId);
+        }
+
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        setLoadingState(false);
+
+        if (data.status === 'success') {
+            actividadModal.hide();
+            showFeedback("¡Listo! Guardado correctamente.", true);
+            fetchActividades(); // Recarga la tabla en la que estés
+        } else {
+            showFeedback(`Error: ${data.message}`, false);
+        }
+    } catch (error) {
+        setLoadingState(false);
+        showFeedback(`Error de conexión: ${error.message}`, false);
+        console.error("Error en submit:", error);
+    }
+}
 
         /**
          * Llama a Apps Script para eliminar una actividad.
@@ -1146,17 +1148,28 @@
         // =================================================================
         // RENDERIZADO DE TABLAS
         // =================================================================
+        // =================================================================
+        // RENDERIZADO DE TABLAS (ACTUALIZADO)
+        // =================================================================
         function renderTable(actividades, tipo) {
-            let tableId = tipo === 'Muestra' ? 'muestrasTable' :
-                tipo === 'Socios' ? 'sociosTable' :
-                    tipo === 'user' ? 'userTable' : 'programacionesTable';
+            // Pasamos a minúsculas para que sea infalible con "Socios", "Muestra", etc.
+            const tipoLower = tipo.toLowerCase();
 
-            const tableBody = document.getElementById(tableId).querySelector('tbody');
+            // Definimos qué tabla usar según el tipo
+            let tableId = tipoLower === 'muestra' ? 'muestrasTable' :
+                tipoLower === 'socios' ? 'sociosTable' :
+                    tipoLower === 'user' ? 'userTable' : 'programacionesTable';
+
+            const tableElement = document.getElementById(tableId);
+
+            // Si por algún motivo no existe la tabla en el HTML, cortamos acá
+            if (!tableElement) return;
+
+            const tableBody = tableElement.querySelector('tbody');
             tableBody.innerHTML = '';
 
             actividades.forEach(act => {
                 const row = tableBody.insertRow();
-                const tipoLower = tipo.toLowerCase();
 
                 // Badge de activo uniforme para todos
                 const badgeActivo = `<span class="badge ${act.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${act.activo}</span>`;
@@ -1164,125 +1177,126 @@
                 if (tipoLower === 'socios') {
                     const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
                     const esActivo = act.activo === 'SI';
-
-                    // --- ARREGLO AQUÍ: Formateamos la fecha de cumple ---
                     const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
 
+                    // Lógica para el color del botón de usuario (amarillo si activo, gris si no)
+                    const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary';
+
                     row.innerHTML = `
-                <td style="display:none;">${act.id}</td> 
-                <td>${nombreSocio}</td>
-                <td>${act.nro_dni}</td>
-                <td>${act.email}</td>
-                <td>${fechaFormateada}</td>
-                <td>${act.tel_cel}</td>
-                <td>${act.lugar_residencia}</td>
-                <td>${badgeActivo}</td>
-                <td class="action-btns">
-                    <button class="btn btn-sm btn-warning" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario"><i class="fas fa-user-lock"></i></button>
-                    <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')"><i class="fas fa-trash-alt"></i></button>
-                </td>`;
+                        <td style="display:none;">${act.id}</td> 
+                        <td>${nombreSocio}</td>
+                        <td>${act.nro_dni}</td>
+                        <td>${act.email}</td>
+                        <td>${fechaFormateada}</td>
+                        <td>${act.tel_cel}</td>
+                        <td>${act.lugar_residencia}</td>
+                        <td>${badgeActivo}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm ${claseBotonUser}" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
+                                <i class="fas fa-user-lock"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
 
                 } else if (tipoLower === 'muestra') {
                     row.innerHTML = `
-                <td style="display:none;">${act.id}</td>
-                <td>${act.nombre}</td>
-                <td>${act.periodo}</td>
-                <td>${act.detalle}</td>
-                <td>${badgeActivo}</td>
-                <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')"><i class="fas fa-trash-alt"></i></button>
-                </td>`;
+                        <td style="display:none;">${act.id}</td>
+                        <td>${act.nombre}</td>
+                        <td>${act.periodo}</td>
+                        <td>${act.detalle}</td>
+                        <td>${badgeActivo}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
 
                 } else if (tipoLower === 'user') {
                     row.innerHTML = `
-                <td style="display:none;">${act.id}</td>
-                <td>${act.Apellido}</td>
-                <td>${act.Nombre}</td>
-                <td>${act.Usuario}</td>
-                <td>${act.Permiso}</td>
-                <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
-                </td>`;
+                        <td style="display:none;">${act.id}</td>
+                        <td>${act.Apellido}</td>
+                        <td>${act.Nombre}</td>
+                        <td>${act.Usuario}</td>
+                        <td>${act.Permiso}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
 
                 } else {
                     // Caso Programación
                     row.innerHTML = `
-                <td style="display:none;">${act.id}</td>
-                <td>${formatToDisplayDate(act.fecha)}</td>
-                <td>${act.hora}</td>
-                <td>${act.titulo}</td>
-                <td>${act.detalle}</td>
-                <td>${act.costo}</td>
-                <td>${badgeActivo}</td>
-                <td class="action-btns">
-                    <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')"><i class="fas fa-trash-alt"></i></button>
-                </td>`;
+                        <td style="display:none;">${act.id}</td>
+                        <td>${formatToDisplayDate(act.fecha)}</td>
+                        <td>${act.hora}</td>
+                        <td>${act.titulo}</td>
+                        <td>${act.detalle}</td>
+                        <td>${act.costo}</td>
+                        <td>${badgeActivo}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>`;
                 }
             });
+
         }
 
         // --- COPIAR DESDE ACÁ ---
 
-// 1. Variable global para guardar qué vamos a borrar
-let deleteInfo = {}; // Variable global para guardar qué vamos a borrar
+        // 1. Variable global para guardar qué vamos a borrar
+        let deleteInfo = {}; // Variable global para guardar qué vamos a borrar
 
-// 1. Función que abre el modal (la llaman los botones de la tabla)
-function confirmDelete(id, tipo, nombre) {
-    deleteInfo = { id, tipo, nombre };
-    
-    // Ponemos el nombre en el modal rojo
-    const msgElement = document.getElementById('confirmDeleteMessage');
-    if (msgElement) msgElement.textContent = `¿Realmente deseás eliminar a "${nombre}"?`;
-    
-    // Abrimos el modal de Bootstrap
-    const modalElement = document.getElementById('confirmDeleteModal');
-    const myModal = new bootstrap.Modal(modalElement);
-    myModal.show();
-}
+        // 1. Función que abre el modal (la llaman los botones de la tabla)
+        function confirmDelete(id, tipo, nombre) {
+            deleteInfo = { id, tipo, nombre };
 
-// 2. Lógica del botón "Eliminar Definitivamente" dentro del modal
-// Usamos este formato para asegurar que el navegador registre el clic
-document.addEventListener('DOMContentLoaded', function() {
-    const btnDoDelete = document.getElementById('btnDoDelete');
-    if (btnDoDelete) {
-        btnDoDelete.onclick = async function() {
-            const { id, tipo, nombre } = deleteInfo;
+            // Ponemos el nombre en el modal rojo
+            const msgElement = document.getElementById('confirmDeleteMessage');
+            if (msgElement) msgElement.textContent = `¿Realmente deseás eliminar a "${nombre}"?`;
+
+            // Abrimos el modal de Bootstrap
             const modalElement = document.getElementById('confirmDeleteModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            
-            // Cerramos el modal
-            if (modalInstance) modalInstance.hide();
-            
-            // Estado de carga
-            setLoadingState(true, 'Eliminando...');
+            const myModal = new bootstrap.Modal(modalElement);
+            myModal.show();
+        }
 
-            try {
-                // El secreto está en pasarle el 'tipo' por la URL para que el Script sepa qué planilla usar
-                const url = `${WEB_APP_URL}?action=DELETE&id=${id}&actividadTipo=${tipo}`;
-                
-                const response = await fetch(url, { method: 'POST' });
-                const data = await response.json();
-                
-                setLoadingState(false);
+        // 2. Lógica del botón "Eliminar Definitivamente" dentro del modal
+        // Usamos este formato para asegurar que el navegador registre el clic
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnDoDelete = document.getElementById('btnDoDelete');
+            // Buscá esta parte dentro del DOMContentLoaded al final de tu script
+            if (btnDoDelete) {
+                btnDoDelete.onclick = async function () {
+                    const { id, tipo, nombre } = deleteInfo;
+                    const modalElement = document.getElementById('confirmDeleteModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
-                if (data.status === 'success') {
-                    showFeedback(`"${nombre}" eliminado correctamente.`, true);
-                    fetchActividades(); // Refresca la tabla actual
-                } else {
-                    showFeedback("Error: " + data.message, false);
-                }
-            } catch (error) {
-                setLoadingState(false);
-                showFeedback("Error de conexión al intentar borrar.", false);
-                console.error(error);
+                    if (modalInstance) modalInstance.hide();
+
+                    // ACTIVAMOS EL CARTEL PARA EL BORRADO
+                    setLoadingState(true, 'Consultando datos');
+
+                    try {
+                        const url = `${WEB_APP_URL}?action=DELETE&id=${id}&actividadTipo=${tipo}`;
+                        const response = await fetch(url, { method: 'POST' });
+                        const data = await response.json();
+
+                        setLoadingState(false); // Apagamos el cartel
+
+                        if (data.status === 'success') {
+                            showFeedback(`"${nombre}" eliminado correctamente.`, true);
+                            fetchActividades();
+                        } else {
+                            showFeedback("Error: " + data.message, false);
+                        }
+                    } catch (error) {
+                        setLoadingState(false);
+                        showFeedback("Error de conexión al intentar borrar.", false);
+                    }
+                };
             }
-        };
-    }
-});
+        });
 
     </script>
 
