@@ -32,11 +32,26 @@
         }
 
         .header-section {
-            background-color: var(--stm-main-color);
-            /* Usa el color principal */
-            color: white;
-            padding: 15px 0;
+            background-color: white;
+            /* Fondo blanco */
+            color: #2D3748;
+            /* Letras en gris oscuro/negro */
+            padding: 30px 0;
+            /* Un poco más de aire */
             border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #dee2e6;
+            /* Una línea sutil para separar */
+        }
+
+        .header-logo {
+            max-width: 180px;
+            /* Logo más grande */
+            height: auto;
+            border-radius: 0;
+            /* Sin círculo */
+            border: none;
+            /* Sin borde blanco */
+            margin-bottom: 15px;
         }
 
         .main-container {
@@ -234,12 +249,10 @@
 
     <div class="container main-container">
         <div class="header-section text-center p-3 mb-4 rounded-top-lg">
-            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="mb-3"
-                style="max-width: 100px; height: auto; border-radius: 50%; border: 3px solid white;">
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="header-logo">
 
-            <h1>Gestor de información</h1>
-            <p class="lead">Asociación Amigos Villa Victoria
-            </p>
+            <h1 style="color: black; font-weight: 700;">Gestor de información</h1>
+            <p class="lead" style="color: #4A5568;">Asociación Amigos Villa Victoria</p>
         </div>
 
         <div class="d-flex justify-content-between align-items-center p-3">
@@ -509,33 +522,41 @@
          * @param {string} tipo - 'Muestra' o 'Programacion'.
          * @returns {Array<Object>} Lista ordenada.
          */
-        function sortActividades(actividades, tipo) {
-            if (!actividades || actividades.length === 0) return [];
+function sortActividades(actividades, tipo) {
+    if (!actividades || actividades.length === 0) return [];
 
-            return actividades.sort((a, b) => {
-                // Ordenar por Programacion: fecha descendente (Más nueva primero)
-                if (tipo === 'Programacion' && a.fecha && b.fecha) {
-                    if (a.fecha !== b.fecha) {
-                        // b.fecha.localeCompare(a.fecha) devuelve > 0 si b es mayor (más nueva)
-                        // y sort pone b antes de a (descendente).
-                        return b.fecha.localeCompare(a.fecha);
-                    }
-                    if (a.hora && b.hora) {
-                        return b.hora.localeCompare(a.hora); // Hora también descendente
-                    }
-                    return 0;
-                }
+    // Pasamos a minúscula para que no falle si viene como 'Socios' o 'socios'
+    const tipoLower = tipo.toLowerCase();
 
-                // Ordenar por ID (Muestra o desempate): ID descendente (Más nuevo primero)
-                if (a.id && b.id) {
-                    const idA = parseFloat(a.id) || 0;
-                    const idB = parseFloat(b.id) || 0;
-                    return idB - idA; // b - a -> Orden descendente (más nuevo primero)
-                }
-
-                return 0;
-            });
+    return actividades.sort((a, b) => {
+        // --- ORDEN ALFABÉTICO PARA SOCIOS (Apellido y Nombre) ---
+        if (tipoLower === 'socios') {
+            const nombreA = (a.Apellido || "").toLowerCase();
+            const nombreB = (b.Apellido || "").toLowerCase();
+            return nombreA.localeCompare(nombreB);
         }
+
+        // Ordenar por Programacion: fecha descendente (Más nueva primero)
+        if (tipo === 'Programacion' && a.fecha && b.fecha) {
+            if (a.fecha !== b.fecha) {
+                return b.fecha.localeCompare(a.fecha);
+            }
+            if (a.hora && b.hora) {
+                return b.hora.localeCompare(a.hora);
+            }
+            return 0;
+        }
+
+        // Ordenar por ID (Muestra o desempate): ID descendente
+        if (a.id && b.id) {
+            const idA = parseFloat(a.id) || 0;
+            const idB = parseFloat(b.id) || 0;
+            return idB - idA;
+        }
+
+        return 0;
+    });
+}
 
         // =================================================================
         // HTML DINÁMICO PARA EL FORMULARIO 
@@ -972,76 +993,76 @@
         /**
  * Maneja el envío del formulario (Crear o Actualizar)
  */
-       async function handleFormSubmission() {
-    const form = document.getElementById('actividadForm');
-    const actividadId = document.getElementById('actividadId').value; // Este es el ID que viene del modal
-    const tipo = document.getElementById('actividadTipo').value;
-    const btnTexto = document.getElementById('saveActividadBtn').textContent;
+        async function handleFormSubmission() {
+            const form = document.getElementById('actividadForm');
+            const actividadId = document.getElementById('actividadId').value; // Este es el ID que viene del modal
+            const tipo = document.getElementById('actividadTipo').value;
+            const btnTexto = document.getElementById('saveActividadBtn').textContent;
 
-    // 1. Definimos la acción correctamente según el tipo y el texto del botón
-    let accion;
-    if (tipo === 'user') {
-        // Si el botón dice "Guardar Usuario" es porque es uno nuevo (vínculo con socio)
-        // Si dice "Actualizar", es un UPDATE de un usuario que ya existe
-        accion = (btnTexto === 'Guardar Usuario') ? 'CREATE_USER' : 'UPDATE';
-    } else {
-        accion = actividadId ? 'UPDATE' : 'CREATE';
-    }
+            // 1. Definimos la acción correctamente según el tipo y el texto del botón
+            let accion;
+            if (tipo === 'user') {
+                // Si el botón dice "Guardar Usuario" es porque es uno nuevo (vínculo con socio)
+                // Si dice "Actualizar", es un UPDATE de un usuario que ya existe
+                accion = (btnTexto === 'Guardar Usuario') ? 'CREATE_USER' : 'UPDATE';
+            } else {
+                accion = actividadId ? 'UPDATE' : 'CREATE';
+            }
 
-    // 2. Validación de campos (tu lógica actual)
-    const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
-    let formValido = true;
-    visibleInputs.forEach(input => {
-        if (input.offsetParent !== null && input.hasAttribute('required') && !input.value.trim()) {
-            formValido = false;
-            input.classList.add('is-invalid');
-        } else {
-            input.classList.remove('is-invalid');
+            // 2. Validación de campos (tu lógica actual)
+            const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+            let formValido = true;
+            visibleInputs.forEach(input => {
+                if (input.offsetParent !== null && input.hasAttribute('required') && !input.value.trim()) {
+                    formValido = false;
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            if (!formValido) {
+                showFeedback("¡Epa! Te faltan completar campos obligatorios.", false);
+                return;
+            }
+
+            // 3. Preparación del envío
+            setLoadingState(true, 'Procesando datos');
+
+            try {
+                const formData = new FormData(form);
+                formData.append('action', accion);
+                formData.append('actividadTipo', tipo);
+                formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
+
+                // --- LÓGICA CRÍTICA PARA EL ID ---
+                // Si estamos creando un usuario, el 'actividadId' contiene el ID del socio.
+                // Lo seteamos como 'id' para que el backend sepa que ese es el ID de la fila/socio.
+                if (actividadId) {
+                    formData.set('id', actividadId);
+                }
+
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                setLoadingState(false);
+
+                if (data.status === 'success') {
+                    actividadModal.hide();
+                    showFeedback("¡Listo! Guardado correctamente.", true);
+                    fetchActividades(); // Recarga la tabla en la que estés
+                } else {
+                    showFeedback(`Error: ${data.message}`, false);
+                }
+            } catch (error) {
+                setLoadingState(false);
+                showFeedback(`Error de conexión: ${error.message}`, false);
+                console.error("Error en submit:", error);
+            }
         }
-    });
-
-    if (!formValido) {
-        showFeedback("¡Epa! Te faltan completar campos obligatorios.", false);
-        return;
-    }
-
-    // 3. Preparación del envío
-    setLoadingState(true, 'Procesando datos');
-
-    try {
-        const formData = new FormData(form);
-        formData.append('action', accion);
-        formData.append('actividadTipo', tipo);
-        formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
-
-        // --- LÓGICA CRÍTICA PARA EL ID ---
-        // Si estamos creando un usuario, el 'actividadId' contiene el ID del socio.
-        // Lo seteamos como 'id' para que el backend sepa que ese es el ID de la fila/socio.
-        if (actividadId) {
-            formData.set('id', actividadId);
-        }
-
-        const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-        setLoadingState(false);
-
-        if (data.status === 'success') {
-            actividadModal.hide();
-            showFeedback("¡Listo! Guardado correctamente.", true);
-            fetchActividades(); // Recarga la tabla en la que estés
-        } else {
-            showFeedback(`Error: ${data.message}`, false);
-        }
-    } catch (error) {
-        setLoadingState(false);
-        showFeedback(`Error de conexión: ${error.message}`, false);
-        console.error("Error en submit:", error);
-    }
-}
 
         /**
          * Llama a Apps Script para eliminar una actividad.
