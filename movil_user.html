@@ -670,7 +670,7 @@ function validatePagoForm() {
     const fecha = document.getElementById('pagoFecha').value;
     const tipo = document.getElementById('pagoTipo').value;
 
-    if (monto && fecha && tipo && isComprobanteOk) {
+    if (monto && fecha && tipo ) {
         btnSubmit.disabled = false;
         btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
         btnSubmit.classList.add('bg-red-600', 'hover:bg-red-700');
