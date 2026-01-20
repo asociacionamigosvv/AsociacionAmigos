@@ -1166,12 +1166,28 @@
                 setLoadingState(false);
 
                 if (data.status === 'success') {
-                    actividadModal.hide();
-                    showFeedback("¡Listo! Guardado correctamente.", true);
-                    if (tipo !== 'pagos') fetchActividades(); 
-                } else {
-                    showFeedback(`Error: ${data.message}`, false);
+    // NUEVA LÓGICA DE SEGURIDAD PARA SOCIOS INACTIVOS
+    const esInactivo = formData.get('activo') === 'false';
+    
+    if (tipo === 'socios' && actividadId && esInactivo) {
+        // Si desactivamos un socio existente, mandamos a borrar su usuario por seguridad
+        // No hace falta esperar la respuesta para cerrar el modal principal
+        fetch(`${WEB_APP_URL}?action=DELETE&id=${actividadId}&actividadTipo=user`, { method: 'POST' })
+            .then(res => res.json())
+            .then(userData => {
+                if(userData.status === 'success') {
+                    console.log("Usuario eliminado por inactividad del socio.");
                 }
+            })
+            .catch(err => console.error("Error al quitar acceso:", err));
+    }
+
+    actividadModal.hide();
+    showFeedback("¡Listo! Datos actualizados y acceso revocado si correspondía.", true);
+    fetchActividades(); 
+} else {
+    showFeedback(`Error: ${data.message}`, false);
+}
             } catch (error) {
                 setLoadingState(false);
                 showFeedback(`Error de conexión: ${error.message}`, false);
