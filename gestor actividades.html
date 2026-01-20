@@ -565,21 +565,35 @@
          * @param {string} tipo - 'Muestra' o 'Programacion'.
          * @returns {Array<Object>} Lista ordenada.
          */
+        /**
+         * Ordena las actividades.
+         * Para Socios: Primero Inactivos (NO) luego Activos (SI), y ambos por orden alfabético.
+         */
         function sortActividades(actividades, tipo) {
             if (!actividades || actividades.length === 0) return [];
 
-            // Pasamos a minúscula para que no falle si viene como 'Socios' o 'socios'
             const tipoLower = tipo.toLowerCase();
 
             return actividades.sort((a, b) => {
-                // --- ORDEN ALFABÉTICO PARA SOCIOS (Apellido y Nombre) ---
+                // --- LÓGICA PARA SOCIOS ---
                 if (tipoLower === 'socios') {
+                    // 1. Criterio de Activo/Inactivo (NO antes que SI)
+                    // Comparamos los strings: "NO" viene antes que "SI" alfabéticamente
+                    const activoA = (a.activo || "SI").toUpperCase();
+                    const activoB = (b.activo || "SI").toUpperCase();
+                    
+                    if (activoA !== activoB) {
+                        // Usamos localeCompare para que "NO" quede arriba de "SI"
+                        return activoA.localeCompare(activoB);
+                    }
+
+                    // 2. Criterio Alfabético (Apellido y Nombre)
                     const nombreA = (a.Apellido || "").toLowerCase();
                     const nombreB = (b.Apellido || "").toLowerCase();
                     return nombreA.localeCompare(nombreB);
                 }
 
-                // Ordenar por Programacion: fecha descendente (Más nueva primero)
+                // --- LOGICA PARA PROGRAMACIÓN (Mantiene tu orden original) ---
                 if (tipo === 'Programacion' && a.fecha && b.fecha) {
                     if (a.fecha !== b.fecha) {
                         return b.fecha.localeCompare(a.fecha);
@@ -590,7 +604,7 @@
                     return 0;
                 }
 
-                // Ordenar por ID (Muestra o desempate): ID descendente
+                // --- LOGICA PARA MUESTRAS O ID ---
                 if (a.id && b.id) {
                     const idA = parseFloat(a.id) || 0;
                     const idB = parseFloat(b.id) || 0;
@@ -678,7 +692,7 @@
                 <label for="montoCostoProgramacion" class="form-label">Monto (Ej: 5000)</label>
                 <div class="input-group">
                     <span class="input-group-text">$</span>
-                    <input type="number" step="0.01" min="0" class="form-control" id="montoCostoProgramacion" name="montoCostoProgramacion" placeholder="0">
+                    <input type="text" step="0.01" min="0" class="form-control" id="montoCostoProgramacion" name="montoCostoProgramacion" placeholder="0">
                 </div>
                 <div class="invalid-feedback">Debes ingresar el monto.</div>
             </div>
