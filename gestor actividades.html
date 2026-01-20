@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+    <link rel="shortcut icon" href="logo AAVV.png" type="image/x-icon">
     <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,24 +117,66 @@
             background-color: white;
         }
 
+        /* MODIFICACIÓN: Ajuste para eliminar recuadro blanco sobrante */
+        .tab-content {
+            padding: 0 !important;
+            /* Esto elimina el espacio blanco de abajo y los costados */
+            border: none !important;
+            /* Esto quita el borde que enmarca el recuadro */
+        }
+
         .table-responsive {
-            margin-top: 15px;
+            margin-top: 0;
+            /* Asegura que la tabla empiece pegada a la pestaña */
+            border-radius: 0 0 8px 8px;
+            /* Redondea solo las esquinas de abajo */
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+            /* Eliminamos el margen inferior de la tabla */
         }
 
         .table thead th {
-            background-color: #e9ecef;
+            background-color: #f8f9fa;
+            /* Un poco más claro */
             color: var(--stm-main-color);
             border-bottom: 2px solid #dee2e6;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .table tbody tr:hover {
             background-color: #f1f1f1;
         }
 
+        /* Ajuste específico para que los botones de acciones se vean como en tu captura */
+        .action-btns {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            /* Más espacio entre botones */
+            /* padding: 8px !important;  <-- Quitamos padding forzado aquí para que no afecte la altura de la celda */
+            white-space: nowrap;
+        }
+
         .action-btns .btn {
-            margin: 2px;
-            padding: 5px 10px;
-            font-size: 0.85rem;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 6px;
+            /* Bordes un poco más redondeados */
+        }
+
+        /* Alineación general para todos los encabezados de acciones */
+        th[scope="col"]:last-child {
+            text-align: center !important;
         }
 
         /* Iconos de editar en la tabla (usando el color principal) */
@@ -293,7 +336,7 @@
             </button>
         </ul>
 
-        <div class="tab-content p-3 border border-top-0 rounded-bottom-lg">
+        <div class="tab-content">
             <div class="tab-pane fade show active" id="muestras" role="tabpanel" aria-labelledby="muestras-tab">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle" id="muestrasTable">
@@ -301,10 +344,10 @@
                             <tr>
                                 <th scope="col" style="width: 0; display:none;">ID</th>
                                 <th scope="col" style="width: 25%;">Nombre</th>
-                                <th scope="col" style="width: 25%;">Período</th>
-                                <th scope="col" style="width: 30%;">Detalle</th>
-                                <th scope="col" style="width: 10%;">Activo</th>
-                                <th scope="col" style="width: 10%;">Acciones</th>
+                                <th scope="col" style="width: 20%;">Período</th>
+                                <th scope="col" style="width: 35%;">Detalle</th>
+                                <th scope="col" style="width: 5%; text-align: center;">Activo</th>
+                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -322,10 +365,10 @@
                                 <th scope="col" style="width: 10%;">Fecha</th>
                                 <th scope="col" style="width: 7%;">Hora</th>
                                 <th scope="col" style="width: 20%;">Título</th>
-                                <th scope="col" style="width: 25%;">Detalle</th>
+                                <th scope="col" style="width: 23%;">Detalle</th>
                                 <th scope="col" style="width: 15%;">Costo</th>
-                                <th scope="col" style="width: 8%;">Activo</th>
-                                <th scope="col" style="width: 15%;">Acciones</th>
+                                <th scope="col" style="width: 10%; text-align: center;">Activo</th>
+                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -340,14 +383,14 @@
                         <thead>
                             <tr>
                                 <th scope="col" style="display:none;">ID</th>
-                                <th scope="col">Apellido y Nombre</th>
-                                <th scope="col">DNI</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Cumpleaños</th>
-                                <th scope="col">Celular</th>
-                                <th scope="col">Residencia</th>
-                                <th scope="col">Activo</th>
-                                <th scope="col">Acciones</th>
+                                <th scope="col" style="width: 20%;">Apellido y Nombre</th>
+                                <th scope="col" style="width: 10%;">DNI</th>
+                                <th scope="col" style="width: 15%;">Email</th>
+                                <th scope="col" style="width: 10%;">Cumple</th>
+                                <th scope="col" style="width: 12%;">Celular</th>
+                                <th scope="col" style="width: 13%;">Residencia</th>
+                                <th scope="col" style="width: 5%; text-align: center;">Activo</th>
+                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -459,7 +502,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // URL DE TU WEB APP (DEBE SER REEMPLAZADA DESPUÉS DE CADA IMPLEMENTACIÓN NUEVA)
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwnh-2DYTjZIDRAitRMlNZpfm5KAzqGfEMgdikqCqWolU62mQ9U-FHFg1ME8WJ0VihXyA/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwRD3CsV6sk0ArdjaWvTzKU6dj4fKA1KxtQDlEb87hxQo9jsMkXmXQhNSSHGCHjd2Fm4A/exec';
         // ID PLANILLA USUARIOS
         const USER_SPREADSHEET_ID = '1h3Q3aOYEsXqKC3xN4qj7K7SmkwpFQtZdd0POsZF77Dg';
 
@@ -522,41 +565,41 @@
          * @param {string} tipo - 'Muestra' o 'Programacion'.
          * @returns {Array<Object>} Lista ordenada.
          */
-function sortActividades(actividades, tipo) {
-    if (!actividades || actividades.length === 0) return [];
+        function sortActividades(actividades, tipo) {
+            if (!actividades || actividades.length === 0) return [];
 
-    // Pasamos a minúscula para que no falle si viene como 'Socios' o 'socios'
-    const tipoLower = tipo.toLowerCase();
+            // Pasamos a minúscula para que no falle si viene como 'Socios' o 'socios'
+            const tipoLower = tipo.toLowerCase();
 
-    return actividades.sort((a, b) => {
-        // --- ORDEN ALFABÉTICO PARA SOCIOS (Apellido y Nombre) ---
-        if (tipoLower === 'socios') {
-            const nombreA = (a.Apellido || "").toLowerCase();
-            const nombreB = (b.Apellido || "").toLowerCase();
-            return nombreA.localeCompare(nombreB);
+            return actividades.sort((a, b) => {
+                // --- ORDEN ALFABÉTICO PARA SOCIOS (Apellido y Nombre) ---
+                if (tipoLower === 'socios') {
+                    const nombreA = (a.Apellido || "").toLowerCase();
+                    const nombreB = (b.Apellido || "").toLowerCase();
+                    return nombreA.localeCompare(nombreB);
+                }
+
+                // Ordenar por Programacion: fecha descendente (Más nueva primero)
+                if (tipo === 'Programacion' && a.fecha && b.fecha) {
+                    if (a.fecha !== b.fecha) {
+                        return b.fecha.localeCompare(a.fecha);
+                    }
+                    if (a.hora && b.hora) {
+                        return b.hora.localeCompare(a.hora);
+                    }
+                    return 0;
+                }
+
+                // Ordenar por ID (Muestra o desempate): ID descendente
+                if (a.id && b.id) {
+                    const idA = parseFloat(a.id) || 0;
+                    const idB = parseFloat(b.id) || 0;
+                    return idB - idA;
+                }
+
+                return 0;
+            });
         }
-
-        // Ordenar por Programacion: fecha descendente (Más nueva primero)
-        if (tipo === 'Programacion' && a.fecha && b.fecha) {
-            if (a.fecha !== b.fecha) {
-                return b.fecha.localeCompare(a.fecha);
-            }
-            if (a.hora && b.hora) {
-                return b.hora.localeCompare(a.hora);
-            }
-            return 0;
-        }
-
-        // Ordenar por ID (Muestra o desempate): ID descendente
-        if (a.id && b.id) {
-            const idA = parseFloat(a.id) || 0;
-            const idB = parseFloat(b.id) || 0;
-            return idB - idA;
-        }
-
-        return 0;
-    });
-}
 
         // =================================================================
         // HTML DINÁMICO PARA EL FORMULARIO 
@@ -706,6 +749,48 @@ function sortActividades(actividades, tipo) {
         </select>
     </div>
 `;
+        const PAGOS_FORM_HTML = `
+    <div class="p-2">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label font-weight-bold">Socio</label>
+                <input type="text" class="form-control bg-light" name="socio" id="pagoSocio" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Monto a Cobrar</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" name="monto" id="pagoMonto" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-control" name="fecha_pago" id="pagoFecha" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Método</label>
+                <select class="form-select" name="tipo_pago" id="pagoTipo">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                </select>
+            </div>
+        </div>
+        <input type="hidden" name="id_user" id="pagoIdUser">
+        <input type="hidden" name="confirmado" value="SI">
+
+        <hr class="my-4">
+        
+        <div class="historial-seccion">
+            <h6 class="mb-3 text-primary"><i class="fas fa-list-ul me-2"></i>Últimos Pagos Registrados</h6>
+            <div id="historialPagosLista" class="table-responsive" style="max-height: 200px; border: 1px solid #dee2e6; border-radius: 4px;">
+                <p class="text-muted p-3 text-center">Buscando historial...</p>
+            </div>
+        </div>
+    </div>
+`;
         function togglePeriodoTexto(show) {
             const group = document.getElementById('periodoMuestraTextoGroup');
             group.style.display = show ? 'block' : 'none';
@@ -784,7 +869,9 @@ function sortActividades(actividades, tipo) {
             document.getElementById('actividadTipo').value = tipo;
             document.getElementById('actividadId').value = id || '';
             document.getElementById('saveActividadBtn').textContent = 'Guardar Cambios';
+            document.getElementById('saveActividadBtn').className = 'btn btn-primary'; // Reset color por defecto
 
+            // Por defecto mostramos el grupo "Activo", lo ocultamos solo en casos específicos
             estadoActividadGroup.style.display = 'block';
 
             if (tipo === 'Muestra') {
@@ -792,14 +879,38 @@ function sortActividades(actividades, tipo) {
                 togglePeriodoTexto(false);
             } else if (tipo === 'socios') {
                 formContent.innerHTML = SOCIOS_FORM_HTML;
+            } else if (tipo === 'pagos') {
+                // --- LÓGICA DE GESTIONAR PAGOS ---
+                formContent.innerHTML = PAGOS_FORM_HTML;
+                modalLabel.innerHTML = `<i class="fas fa-money-check-alt me-2"></i>Gestionar Pagos`;
+                document.getElementById('saveActividadBtn').textContent = 'Registrar Pago';
+                document.getElementById('saveActividadBtn').className = 'btn btn-success';
+                estadoActividadGroup.style.display = 'none';
+
+                if (id) {
+                    // Buscamos el socio en la tabla para los datos básicos
+                    const filaSocio = Array.from(document.querySelectorAll('#sociosTable tbody tr')).find(tr =>
+                        tr.cells[0].innerText === id.toString()
+                    );
+
+                    if (filaSocio) {
+                        const nombreCompleto = filaSocio.cells[1].innerText;
+                        document.getElementById('pagoSocio').value = nombreCompleto;
+                        document.getElementById('pagoIdUser').value = id;
+                        document.getElementById('pagoFecha').value = new Date().toISOString().split('T')[0]; // Fecha hoy por defecto
+
+                        // DISPARAMOS EL HISTORIAL
+                        renderHistorialPagos(id);
+                    }
+                }
             } else if (tipo === 'user') {
                 formContent.innerHTML = USER_FORM_HTML;
                 estadoActividadGroup.style.display = 'none';
-                modalLabel.textContent = `Gestión de Usuario`;
+                modalLabel.innerHTML = `<i class="fas fa-user-cog me-2"></i>Gestión de Usuario`;
                 document.getElementById('saveActividadBtn').textContent = 'Guardar Usuario';
+                document.getElementById('saveActividadBtn').className = 'btn btn-warning';
 
                 if (id) {
-                    // 1. Buscamos los datos del socio en la tabla actual para mostrar algo rápido
                     const filaSocio = Array.from(document.querySelectorAll('#sociosTable tbody tr')).find(tr =>
                         tr.cells[0].innerText === id.toString()
                     );
@@ -811,29 +922,24 @@ function sortActividades(actividades, tipo) {
 
                         document.getElementById('Apellido').value = apellido;
                         document.getElementById('Nombre').value = nombre;
-
-                        // Bloqueamos para que no editen el nombre acá (se cambia en Socios)
                         document.getElementById('Apellido').readOnly = true;
                         document.getElementById('Nombre').readOnly = true;
                         document.getElementById('Apellido').style.backgroundColor = "#e9ecef";
                         document.getElementById('Nombre').style.backgroundColor = "#e9ecef";
                     }
 
-                    // 2. Ahora sí, vamos a la base 'user' a ver si ya tiene pass y permiso
-                    setLoadingState(true, 'Verificando si ya tiene usuario...');
+                    setLoadingState(true, 'Verificando usuario...');
                     fetch(`${WEB_APP_URL}?action=READ_BY_ID&id=${id}&actividadTipo=user`)
                         .then(res => res.json())
                         .then(data => {
                             setLoadingState(false);
                             if (data.status === 'success' && data.actividad) {
-                                // SI YA EXISTE: Cargamos lo que falta y cambiamos el título
                                 modalLabel.textContent = `Actualizar Usuario: ${data.actividad.Usuario}`;
                                 document.getElementById('Usuario').value = data.actividad.Usuario || '';
                                 document.getElementById('Password').value = data.actividad.Password || '';
                                 document.getElementById('Permiso').value = data.actividad.Permiso || 'USER';
                                 document.getElementById('saveActividadBtn').textContent = 'Actualizar Usuario';
                             } else {
-                                // SI ES NUEVO: Sugerimos un nombre de usuario
                                 const apellidoLimpio = document.getElementById('Apellido').value.toLowerCase().replace(/\s+/g, '');
                                 const inicialNombre = document.getElementById('Nombre').value.charAt(0).toLowerCase();
                                 document.getElementById('Usuario').value = inicialNombre + apellidoLimpio;
@@ -849,7 +955,8 @@ function sortActividades(actividades, tipo) {
                 toggleCostoMonto(false);
             }
 
-            if (id && tipo !== 'user') {
+            // Título por defecto para edición (si no es pago ni usuario)
+            if (id && tipo !== 'user' && tipo !== 'pagos') {
                 modalLabel.textContent = `Editar ${tipo}`;
                 document.getElementById('saveActividadBtn').textContent = 'Actualizar';
                 readActividadById(id, tipo);
@@ -990,26 +1097,23 @@ function sortActividades(actividades, tipo) {
         /**
          * Maneja el envío del formulario para crear o actualizar. (CREATE/UPDATE)
          */
-        /**
- * Maneja el envío del formulario (Crear o Actualizar)
- */
         async function handleFormSubmission() {
             const form = document.getElementById('actividadForm');
-            const actividadId = document.getElementById('actividadId').value; // Este es el ID que viene del modal
+            const actividadId = document.getElementById('actividadId').value; 
             const tipo = document.getElementById('actividadTipo').value;
             const btnTexto = document.getElementById('saveActividadBtn').textContent;
 
             // 1. Definimos la acción correctamente según el tipo y el texto del botón
             let accion;
             if (tipo === 'user') {
-                // Si el botón dice "Guardar Usuario" es porque es uno nuevo (vínculo con socio)
-                // Si dice "Actualizar", es un UPDATE de un usuario que ya existe
                 accion = (btnTexto === 'Guardar Usuario') ? 'CREATE_USER' : 'UPDATE';
+            } else if (tipo === 'pagos') {
+                accion = 'CREATE'; // Los pagos siempre se crean, no se editan por ahora
             } else {
                 accion = actividadId ? 'UPDATE' : 'CREATE';
             }
 
-            // 2. Validación de campos (tu lógica actual)
+            // 2. Validación de campos
             const visibleInputs = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
             let formValido = true;
             visibleInputs.forEach(input => {
@@ -1035,9 +1139,6 @@ function sortActividades(actividades, tipo) {
                 formData.append('actividadTipo', tipo);
                 formData.append('userSpreadsheetId', USER_SPREADSHEET_ID);
 
-                // --- LÓGICA CRÍTICA PARA EL ID ---
-                // Si estamos creando un usuario, el 'actividadId' contiene el ID del socio.
-                // Lo seteamos como 'id' para que el backend sepa que ese es el ID de la fila/socio.
                 if (actividadId) {
                     formData.set('id', actividadId);
                 }
@@ -1053,7 +1154,7 @@ function sortActividades(actividades, tipo) {
                 if (data.status === 'success') {
                     actividadModal.hide();
                     showFeedback("¡Listo! Guardado correctamente.", true);
-                    fetchActividades(); // Recarga la tabla en la que estés
+                    if (tipo !== 'pagos') fetchActividades(); 
                 } else {
                     showFeedback(`Error: ${data.message}`, false);
                 }
@@ -1065,99 +1166,100 @@ function sortActividades(actividades, tipo) {
         }
 
         /**
-         * Llama a Apps Script para eliminar una actividad.
+         * Función para renderizar el historial de pagos en el modal
          */
+        async function renderHistorialPagos(idSocio) {
+            const listaDiv = document.getElementById('historialPagosLista');
+            listaDiv.innerHTML = '<p class="text-muted p-3 text-center">Buscando historial...</p>';
 
-        // Esta es la función que te falta para Socios y Usuarios
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=READ_PAGOS_BY_USER&idUser=${idSocio}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.pagos && data.pagos.length > 0) {
+                    let html = `
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Fecha</th>
+                            <th>Monto</th>
+                            <th>Método</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                    data.pagos.forEach(p => {
+                        const f = p.fecha_pago ? formatToDisplayDate(p.fecha_pago) : 'S/F';
+                        html += `
+                    <tr>
+                        <td class="ps-3">${f}</td>
+                        <td class="fw-bold">$${p.monto}</td>
+                        <td>${p.tipo_pago}</td>
+                    </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    listaDiv.innerHTML = html;
+                } else {
+                    listaDiv.innerHTML = '<p class="text-muted p-3 text-center">Sin pagos registrados.</p>';
+                }
+            } catch (e) {
+                console.error("Error historial:", e);
+                listaDiv.innerHTML = '<p class="text-danger p-3 text-center">Error al cargar historial.</p>';
+            }
+        }
+
         /**
          * Función para confirmar y eliminar registros (Socios, Usuarios, etc.)
          */
         async function confirmDelete(id, tipo, nombre) {
-            // Usamos el confirm del navegador pero con un texto más amigable
-            // Si querés un modal de Bootstrap avisame y lo armamos, 
-            // pero este es el que asegura que no borres por error.
-            const mensaje = `¿Estás seguro de que querés eliminar a "${nombre}"?\nEsta acción no se puede deshacer.`;
+            deleteInfo = { id, tipo, nombre };
 
-            if (confirm(mensaje)) {
-                setLoadingState(true, 'Eliminando registro...');
+            const msgElement = document.getElementById('confirmDeleteMessage');
+            if (msgElement) msgElement.textContent = `¿Realmente deseás eliminar a "${nombre}"?`;
 
-                try {
-                    // Mandamos el tipo para que el Script sepa a qué planilla ir
-                    const url = `${WEB_APP_URL}?action=DELETE&id=${id}&actividadTipo=${tipo}`;
-
-                    const response = await fetch(url, {
-                        method: 'POST'
-                    });
-
-                    const data = await response.json();
-                    setLoadingState(false);
-
-                    if (data.status === 'success') {
-                        // AQUÍ USAMOS TU MENSAJE DE FEEDBACK (el que sale arriba en verde)
-                        showFeedback(`¡Listo! "${nombre}" fue eliminado correctamente.`, true);
-
-                        // Recargamos la tabla automáticamente
-                        fetchActividades();
-                    } else {
-                        showFeedback("Error al eliminar: " + data.message, false);
-                    }
-                } catch (error) {
-                    setLoadingState(false);
-                    console.error('Error al eliminar:', error);
-                    showFeedback("Hubo un fallo en la conexión al intentar eliminar.", false);
-                }
-            }
+            const modalElement = document.getElementById('confirmDeleteModal');
+            const myModal = new bootstrap.Modal(modalElement);
+            myModal.show();
         }
-        // =================================================================
-        // FUNCIÓN PARA EL MODAL DE ACTIVIDADES DE HOY 
-        // =================================================================
 
         /**
          * Consulta a Apps Script por actividades de Programación activas para hoy y muestra el modal si hay.
          */
         async function checkTodayActivities() {
             const today = new Date();
-            // Creamos la fecha en formato YYYY-MM-DD local (no UTC) para el fetch
             const day = String(today.getDate()).padStart(2, '0');
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const year = today.getFullYear();
-            const formattedDate = `${year}-${month}-${day}`; // Formato YYYY-MM-DD para la query
+            const formattedDate = `${year}-${month}-${day}`; 
 
-            // Formato de visualización
             const todayDisplay = today.toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('todayDateDisplay').textContent = todayDisplay;
+            if (document.getElementById('todayDateDisplay')) {
+                document.getElementById('todayDateDisplay').textContent = todayDisplay;
+            }
 
             try {
-                // El backend (Código.gs) ahora compara correctamente solo la parte YYYY-MM-DD
                 const response = await fetch(`${WEB_APP_URL}?action=READ_PROGRAMACION_HOY&fechaHoy=${formattedDate}`);
                 const data = await response.json();
 
-                // --- CAMBIO PARA DEBUGGING ---
-                console.log('Actividades de hoy (READ_PROGRAMACION_HOY) data:', data);
-                // -----------------------------
-
-                if (data.status === 'success' && data.actividades.length > 0) {
+                if (data.status === 'success' && data.actividades && data.actividades.length > 0) {
                     const list = document.getElementById('actividadesHoyList');
-                    list.innerHTML = ''; // Limpiar lista
-
-                    // Ordenamos por hora, aunque no es estrictamente necesario, es mejor UX
-                    data.actividades.sort((a, b) => a.hora.localeCompare(b.hora));
-
-                    data.actividades.forEach(act => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        listItem.innerHTML = `
-                            <div>
-                                <h6 class="mb-0 text-dark">${act.titulo}</h6>
-                                <small class="text-muted">${act.detalle}</small>
-                            </div>
-                            <span class="badge bg-info text-dark rounded-pill">${act.hora}</span>
-                        `;
-                        list.appendChild(listItem);
-                    });
-
-                    if (actividadHoyModal) {
-                        actividadHoyModal.show();
+                    if (list) {
+                        list.innerHTML = '';
+                        data.actividades.sort((a, b) => a.hora.localeCompare(b.hora));
+                        data.actividades.forEach(act => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                            listItem.innerHTML = `
+                                <div>
+                                    <h6 class="mb-0 text-dark">${act.titulo}</h6>
+                                    <small class="text-muted">${act.detalle}</small>
+                                </div>
+                                <span class="badge bg-info text-dark rounded-pill">${act.hora}</span>
+                            `;
+                            list.appendChild(listItem);
+                        });
+                        if (actividadHoyModal) actividadHoyModal.show();
                     }
                 }
             } catch (error) {
@@ -1165,25 +1267,16 @@ function sortActividades(actividades, tipo) {
             }
         }
 
-
-        // =================================================================
-        // RENDERIZADO DE TABLAS
-        // =================================================================
         // =================================================================
         // RENDERIZADO DE TABLAS (ACTUALIZADO)
         // =================================================================
         function renderTable(actividades, tipo) {
-            // Pasamos a minúsculas para que sea infalible con "Socios", "Muestra", etc.
             const tipoLower = tipo.toLowerCase();
-
-            // Definimos qué tabla usar según el tipo
             let tableId = tipoLower === 'muestra' ? 'muestrasTable' :
                 tipoLower === 'socios' ? 'sociosTable' :
                     tipoLower === 'user' ? 'userTable' : 'programacionesTable';
 
             const tableElement = document.getElementById(tableId);
-
-            // Si por algún motivo no existe la tabla en el HTML, cortamos acá
             if (!tableElement) return;
 
             const tableBody = tableElement.querySelector('tbody');
@@ -1191,34 +1284,40 @@ function sortActividades(actividades, tipo) {
 
             actividades.forEach(act => {
                 const row = tableBody.insertRow();
-
-                // Badge de activo uniforme para todos
                 const badgeActivo = `<span class="badge ${act.activo === 'SI' ? 'bg-success' : 'bg-danger'}">${act.activo}</span>`;
 
                 if (tipoLower === 'socios') {
                     const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
                     const esActivo = act.activo === 'SI';
                     const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
-
-                    // Lógica para el color del botón de usuario (amarillo si activo, gris si no)
                     const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary';
 
                     row.innerHTML = `
-                        <td style="display:none;">${act.id}</td> 
-                        <td>${nombreSocio}</td>
-                        <td>${act.nro_dni}</td>
-                        <td>${act.email}</td>
-                        <td>${fechaFormateada}</td>
-                        <td>${act.tel_cel}</td>
-                        <td>${act.lugar_residencia}</td>
-                        <td>${badgeActivo}</td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm ${claseBotonUser}" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
-                                <i class="fas fa-user-lock"></i>
-                            </button>
-                            <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')"><i class="fas fa-trash-alt"></i></button>
-                        </td>`;
+                <td style="display:none;">${act.id}</td> 
+                <td>${nombreSocio}</td>
+                <td>${act.nro_dni}</td>
+                <td>${act.email}</td>
+                <td>${fechaFormateada}</td>
+                <td>${act.tel_cel}</td>
+                <td>${act.lugar_residencia}</td>
+                <td class="text-center">${badgeActivo}</td>
+                <td class="text-center">
+                    <div class="action-btns">
+                        <button class="btn btn-sm ${claseBotonUser}" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
+                            <i class="fas fa-user-lock"></i>
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="showModal('pagos', '${act.id}')" title="Gestión de Pagos">
+                            <i class="fas fa-dollar-sign"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')" title="Editar Socio">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </td>`;
+
 
                 } else if (tipoLower === 'muestra') {
                     row.innerHTML = `
@@ -1226,10 +1325,10 @@ function sortActividades(actividades, tipo) {
                         <td>${act.nombre}</td>
                         <td>${act.periodo}</td>
                         <td>${act.detalle}</td>
-                        <td>${badgeActivo}</td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center">${badgeActivo}</td>
+                        <td class="action-btns-cell"> <div class="action-btns"> <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                            </div>
                         </td>`;
 
                 } else if (tipoLower === 'user') {
@@ -1239,13 +1338,14 @@ function sortActividades(actividades, tipo) {
                         <td>${act.Nombre}</td>
                         <td>${act.Usuario}</td>
                         <td>${act.Permiso}</td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center">
+                            <div class="action-btns">
+                                <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
+                            </div>
                         </td>`;
 
                 } else {
-                    // Caso Programación
                     row.innerHTML = `
                         <td style="display:none;">${act.id}</td>
                         <td>${formatToDisplayDate(act.fecha)}</td>
@@ -1253,40 +1353,22 @@ function sortActividades(actividades, tipo) {
                         <td>${act.titulo}</td>
                         <td>${act.detalle}</td>
                         <td>${act.costo}</td>
-                        <td>${badgeActivo}</td>
-                        <td class="action-btns">
-                            <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center">${badgeActivo}</td>
+                        <td class="action-btns-cell">
+                            <div class="action-btns">
+                                <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                            </div>
                         </td>`;
                 }
             });
 
         }
 
-        // --- COPIAR DESDE ACÁ ---
+        let deleteInfo = {}; 
 
-        // 1. Variable global para guardar qué vamos a borrar
-        let deleteInfo = {}; // Variable global para guardar qué vamos a borrar
-
-        // 1. Función que abre el modal (la llaman los botones de la tabla)
-        function confirmDelete(id, tipo, nombre) {
-            deleteInfo = { id, tipo, nombre };
-
-            // Ponemos el nombre en el modal rojo
-            const msgElement = document.getElementById('confirmDeleteMessage');
-            if (msgElement) msgElement.textContent = `¿Realmente deseás eliminar a "${nombre}"?`;
-
-            // Abrimos el modal de Bootstrap
-            const modalElement = document.getElementById('confirmDeleteModal');
-            const myModal = new bootstrap.Modal(modalElement);
-            myModal.show();
-        }
-
-        // 2. Lógica del botón "Eliminar Definitivamente" dentro del modal
-        // Usamos este formato para asegurar que el navegador registre el clic
         document.addEventListener('DOMContentLoaded', function () {
             const btnDoDelete = document.getElementById('btnDoDelete');
-            // Buscá esta parte dentro del DOMContentLoaded al final de tu script
             if (btnDoDelete) {
                 btnDoDelete.onclick = async function () {
                     const { id, tipo, nombre } = deleteInfo;
@@ -1294,16 +1376,14 @@ function sortActividades(actividades, tipo) {
                     const modalInstance = bootstrap.Modal.getInstance(modalElement);
 
                     if (modalInstance) modalInstance.hide();
-
-                    // ACTIVAMOS EL CARTEL PARA EL BORRADO
-                    setLoadingState(true, 'Consultando datos');
+                    setLoadingState(true, 'Eliminando...');
 
                     try {
                         const url = `${WEB_APP_URL}?action=DELETE&id=${id}&actividadTipo=${tipo}`;
                         const response = await fetch(url, { method: 'POST' });
                         const data = await response.json();
 
-                        setLoadingState(false); // Apagamos el cartel
+                        setLoadingState(false);
 
                         if (data.status === 'success') {
                             showFeedback(`"${nombre}" eliminado correctamente.`, true);
