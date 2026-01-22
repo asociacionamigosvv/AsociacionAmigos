@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Gestor Villa Victoria - Acceso</title>
+    <link rel="icon" href="logo AAVV.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    
+    <style>
+        :root {
+            --color-primary: #4A5568;  
+            --color-accent: #30B5AA;   
+            --color-bg-light: #f3f4f6; 
+            --color-card-bg: #ffffff;  
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+
+        .login-card {
+            background-color: var(--color-card-bg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-button {
+            background-color: var(--color-primary);
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover:not(:disabled) {
+            background-color: var(--color-accent);
+        }
+
+        .input-focus:focus {
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px rgba(48, 181, 170, 0.5);
+        }
+
+        .large-logo {
+            width: 150px;
+            height: auto; 
+            margin: 0 auto 1rem auto;
+            display: block;
+        }
+
+        .header-title {
+            font-weight: 700; 
+            color: #1a202c;
+            line-height: 1.2;
+            letter-spacing: -0.01em; 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="login-card p-8 rounded-lg">
+        <div class="text-center bg-white p-8 border-b border-gray-100 shadow-sm">
+            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="large-logo" 
+                 onerror="this.onerror=null; this.src='https://placehold.co/150x150/ffffff/30B5AA?text=Logo';">
+            <h1 class="header-title text-3xl sm:text-4xl">Asociación Amigos Villa Victoria</h1>
+            <p class="text-gray-500 text-xs font-light px-6">Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata.</p>
+        </div>
+
+        <div class="text-center mt-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-700">Acceso Gestor</h2>
+            <p class="text-gray-500 mt-2">Ingrese credenciales de administrador.</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                <input type="text" id="username" name="username" required
+                       class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                       placeholder="Su nombre de usuario">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                <input type="password" id="password" name="password" required
+                       class="input-focus w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                       placeholder="Su contraseña">
+            </div>
+
+            <div id="loadingMessage" class="hidden text-center text-[var(--color-primary)] text-sm">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Verificando permisos...
+            </div>
+            
+            <button type="submit" id="submitBtn"
+                    class="login-button w-full text-white font-semibold py-2 px-4 rounded-md shadow-lg hover:shadow-xl transition duration-300">
+                <i class="fas fa-lock-open mr-2"></i> Ingresar al Gestor
+            </button>
+        </form>
+    </div>
+
+    <div id="statusModal" class="hidden fixed inset-0 z-50 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center">
+            <div id="modalIcon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
+            <h3 id="modalTitle" class="text-xl font-bold mb-2"></h3>
+            <p id="modalMessage" class="text-gray-600 text-sm mb-6"></p>
+            <button id="modalBtn" class="w-full py-3 rounded-xl font-bold text-white transition-colors"></button>
+        </div>
+    </div>
+
+    <script type="module">
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqIjYRjylV75YYeUlQOAmFvBiWpgAxxdLDa3gQk1NkVlFjRZoT8S0smXm8m9mMLfTP/exec"; 
+        
+        const loginForm = document.getElementById('loginForm');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const statusModal = document.getElementById('statusModal');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Limpiar cualquier sesión previa al cargar el login
+        localStorage.clear();
+
+        function showModal(type, title, message) {
+            const iconDiv = document.getElementById('modalIcon');
+            const btn = document.getElementById('modalBtn');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            
+            if (type === 'success') {
+                iconDiv.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-green-100 text-green-600";
+                iconDiv.innerHTML = '<i class="fas fa-check text-2xl"></i>';
+                btn.className = "w-full py-3 rounded-xl font-bold text-white bg-teal-500 hover:bg-teal-600";
+                btn.textContent = "Entrar ahora";
+                btn.onclick = () => window.location.href = 'gestor actividades.html'; 
+            } else {
+                iconDiv.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-red-100 text-red-600";
+                iconDiv.innerHTML = '<i class="fas fa-times text-2xl"></i>';
+                btn.className = "w-full py-3 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600";
+                btn.textContent = "Reintentar";
+                btn.onclick = () => {
+                    statusModal.classList.add('hidden');
+                    submitBtn.disabled = false;
+                };
+            }
+            statusModal.classList.remove('hidden');
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loadingMessage.classList.remove('hidden');
+            submitBtn.disabled = true;
+            
+            const formData = new URLSearchParams({
+                action: 'login',
+                username: document.getElementById('username').value.trim(),
+                password: document.getElementById('password').value.trim()
+            });
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                const data = await response.json();
+
+                // Normalizamos el permiso que viene del script de Google
+                const userRole = data.permiso ? data.permiso.toString().toUpperCase().trim() : "";
+
+                if (data.success && userRole === 'ADMIN') {
+                    // --- ACÁ ESTÁ EL CAMBIO CLAVE ---
+                    // Guardamos un objeto 'usuario' con toda la data necesaria
+                    const infoUsuario = {
+                        nombre: data.fullName,
+                        usuario: document.getElementById('username').value.trim(),
+                        permiso: userRole
+                    };
+                    localStorage.setItem('usuario', JSON.stringify(infoUsuario));
+                    localStorage.setItem('adminLoggedIn', 'true'); // Mantengo este por compatibilidad
+                    
+                    showModal('success', 'Acceso Concedido', `Bienvenido ${data.fullName}. Rango ADMIN verificado.`);
+                } else if (data.success && userRole !== 'ADMIN') {
+                    showModal('error', 'Acceso Denegado', `Tu usuario tiene rango "${userRole}". Se requiere rango "ADMIN" para operar este gestor.`);
+                } else {
+                    showModal('error', 'Error de Acceso', data.message || 'Usuario o contraseña incorrectos.');
+                }
+            } catch (error) {
+                console.error(error);
+                showModal('error', 'Fallo de Red', 'No se pudo conectar con el servidor de Google.');
+            } finally {
+                loadingMessage.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

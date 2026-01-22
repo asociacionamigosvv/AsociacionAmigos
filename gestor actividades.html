@@ -2,11 +2,9 @@
 <html lang="es">
 
 <head>
-    <link rel="shortcut icon" href="logo AAVV.png" type="image/x-icon">
-    <base target="_top">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Actividades - Villa Victoria</title>
+
+
+
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -32,6 +30,39 @@
             padding-top: 20px;
         }
 
+        /* --- AGREGADO: PROTECCIÓN VISUAL --- */
+        #mainContent {
+            display: none;
+        }
+
+        /* Diseño moderno para el buscador */
+/* Buscador minimalista alineado con botones */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-input-custom {
+    border-radius: 50px !important;
+    padding: 0 20px !important; /* Espaciado interno equilibrado */
+    border: 2px solid var(--stm-teal) !important;
+    transition: all 0.3s ease;
+    height: 38px; /* Altura exacta para alinear con .btn */
+    min-width: 250px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.search-input-custom:focus {
+    box-shadow: 0 0 0 0.2rem rgba(52, 179, 197, 0.25) !important;
+    outline: none;
+}
+
+/* Para que el placeholder no sea tan fuerte */
+.search-input-custom::placeholder {
+    color: #a0a0a0;
+}
+
         .header-section {
             background-color: white;
             /* Fondo blanco */
@@ -42,6 +73,8 @@
             border-radius: 8px 8px 0 0;
             border-bottom: 1px solid #dee2e6;
             /* Una línea sutil para separar */
+            position: relative;
+            /* AGREGADO: Para posicionar el botón de logout */
         }
 
         .header-logo {
@@ -102,6 +135,30 @@
             color: white !important;
             transform: translateY(-1px);
         }
+
+        /* Estilo para el botón de Logout similar al de 'Crear' pero con otro color si querés */
+        .btn-custom-logout {
+            background-color: #6c757d;
+            /* Gris para que no compita tanto con el verde/azul */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom-logout:hover {
+            background-color: #5a6268;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Si querés que sea rojo como el de eliminar, cambiá el background-color a #dc3545 */
 
         /* Pestañas activas y hover */
         .nav-link.active,
@@ -224,6 +281,18 @@
             opacity: 1;
         }
 
+        .main-header {
+            position: sticky;
+            /* Lo deja fijo al hacer scroll */
+            top: 0;
+            /* Pegado al borde superior */
+            z-index: 1000;
+            /* Se asegura de que pase por ENCIMA de la tabla y botones */
+            background-color: var(--stm-main-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Sombra para que se note el relieve al scrollear */
+        }
+
         .feedback {
             position: fixed;
             top: 20px;
@@ -278,7 +347,27 @@
 </head>
 
 <body>
+    <header class="main-header mb-4 p-3 shadow-sm d-flex justify-content-between align-items-center"
+        style="position: sticky; top: 0; z-index: 1000; background-color: var(--stm-main-color);">
 
+        <div class="d-flex align-items-center">
+            <img src="logo AAVV.png" alt="Logo" class="me-3" style="height: 40px; filter: brightness(0) invert(1);">
+            <h1 class="h4 mb-0 text-white">Gestor de Actividades</h1>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div id="userBadge" class="text-white d-flex align-items-center"
+                style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);">
+                <i class="fas fa-user-circle me-2"></i>
+                <span id="userNameDisplay" class="fw-bold text-white">...</span>
+            </div>
+
+            <button onclick="logout()" class="btn btn-sm btn-outline-light"
+                style="border-radius: 8px; padding: 5px 12px; display: flex; align-items: center; border-color: rgba(255,255,255,0.5);">
+                <i class="fas fa-sign-out-alt me-1"></i> Salir
+            </button>
+        </div>
+    </header>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="d-flex align-items-center">
             <div class="spinner-border text-primary" role="status">
@@ -290,213 +379,252 @@
 
     <div class="feedback" id="feedbackMessage"></div>
 
-    <div class="container main-container">
-        <div class="header-section text-center p-3 mb-4 rounded-top-lg">
-            <img src="logo AAVV.png" alt="Logo Villa Victoria" class="header-logo">
+    <div id="mainContent">
 
-            <h1 style="color: black; font-weight: 700;">Gestor de información</h1>
-            <p class="lead" style="color: #4A5568;">Asociación Amigos Villa Victoria</p>
-        </div>
+        <div class="container main-container">
+            <div class="header-section text-center p-3 mb-4 rounded-top-lg">
 
-        <div class="d-flex justify-content-between align-items-center p-3">
-            <h2 class="h4 mb-0">Listado de Actividades</h2>
-            <div class="d-flex gap-2">
-                <button class="btn btn-custom-teal" onclick="showModal('Muestra')">
-                    <i class="fas fa-plus-circle"></i> Nueva Muestra
-                </button>
-                <button class="btn btn-custom-teal" onclick="showModal('Programacion')">
-                    <i class="fas fa-plus-circle"></i> Nueva Programación
-                </button>
-                <button class="btn btn-custom-teal" onclick="showModal('socios')">
-                    <i class="fas fa-plus-circle"></i> Nuevo Socio
-                </button>
+
+                <img src="logo AAVV.png" alt="Logo Villa Victoria" class="header-logo">
+
+                <h1 style="color: black; font-weight: 700;">Gestor de información</h1>
+                <p class="lead" style="color: #4A5568;">Centro Cultural Victoria Ocampo - Villa Victoria - Mar del
+                    Plata.</p>
+
 
             </div>
-        </div>
 
-        <ul class="nav nav-tabs nav-justified" id="activityTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="muestras-tab" data-bs-toggle="tab" data-bs-target="#muestras"
-                    type="button" role="tab" aria-controls="muestras" aria-selected="true"
-                    onclick="setActiveTab('Muestra')">
-                    <i class="fas fa-camera-retro"></i> Muestras
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="programaciones-tab" data-bs-toggle="tab" data-bs-target="#programaciones"
-                    type="button" role="tab" aria-controls="programaciones" aria-selected="false"
-                    onclick="setActiveTab('Programacion')">
-                    <i class="fas fa-calendar-alt"></i> Programación
-                </button>
-            </li>
-
-            <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
-                role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('socios')">
-                <i class="fas fa-users"></i> Socios
-            </button>
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="muestras" role="tabpanel" aria-labelledby="muestras-tab">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle" id="muestrasTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 0; display:none;">ID</th>
-                                <th scope="col" style="width: 25%;">Nombre</th>
-                                <th scope="col" style="width: 20%;">Período</th>
-                                <th scope="col" style="width: 35%;">Detalle</th>
-                                <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="programaciones" role="tabpanel" aria-labelledby="programaciones-tab">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle" id="programacionesTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 0; display:none;">ID</th>
-                                <th scope="col" style="width: 10%;">Fecha</th>
-                                <th scope="col" style="width: 7%;">Hora</th>
-                                <th scope="col" style="width: 20%;">Título</th>
-                                <th scope="col" style="width: 23%;">Detalle</th>
-                                <th scope="col" style="width: 15%;">Costo</th>
-                                <th scope="col" style="width: 10%; text-align: center;">Activo</th>
-                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="socios" role="tabpanel" aria-labelledby="socios-tab">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle" id="sociosTable">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="display:none;">ID</th>
-                                <th scope="col" style="width: 20%;">Apellido y Nombre</th>
-                                <th scope="col" style="width: 10%;">DNI</th>
-                                <th scope="col" style="width: 15%;">Email</th>
-                                <th scope="col" style="width: 10%;">Cumple</th>
-                                <th scope="col" style="width: 12%;">Celular</th>
-                                <th scope="col" style="width: 13%;">Residencia</th>
-                                <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="modal fade" id="actividadModal" tabindex="-1" aria-labelledby="actividadModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="actividadModalLabel">Crear Actividad</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <form id="actividadForm" class="needs-validation" novalidate>
-                    <div class="modal-body">
-                        <input type="hidden" id="actividadTipo" name="actividadTipo" value="">
-                        <input type="hidden" id="actividadId" name="actividadId" value="">
-
-                        <div id="formContent">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Estado de Actividad</label>
-                            <div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="activo" id="activoSI"
-                                        value="true" required>
-                                    <label class="form-check-label" for="activoSI">Activo (SI)</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="activo" id="activoNO"
-                                        value="false" required>
-                                    <label class="form-check-label" for="activoNO">Inactivo (NO)</label>
-                                </div>
-                            </div>
-                        </div>
-
+            <div class="d-flex justify-content-between align-items-center p-3">
+                <h2 class="h4 mb-0">Listado de Actividades</h2>
+                <div class="d-flex gap-2 align-items-center">
+                    <div id="searchContainer" class="search-wrapper" style="display: none; min-width: 250px;">
+                        
+                        <input type="text" id="searchInput" class="form-control form-control-sm search-input-custom"
+                            placeholder="Buscar por nombre o DNI..." onkeyup="filterSocios()">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-custom-purple" id="saveActividadBtn">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel"><i class="fas fa-trash-alt"></i> Confirmar
-                        Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas eliminar esta actividad: <strong id="deleteActividadInfo"></strong>?
-                    </p>
-                    <p class="text-danger">¡Esta acción no se puede deshacer!</p>
-                    <input type="hidden" id="deleteId" value="">
-                    <input type="hidden" id="deleteTipo" value="">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger"
-                        onclick="deleteActividad(document.getElementById('deleteId').value, document.getElementById('deleteTipo').value)">Eliminar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="actividadHoyModal" tabindex="-1" aria-labelledby="actividadHoyModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
-                    <h5 class="modal-title" id="actividadHoyModalLabel"><i class="fas fa-bell me-2"></i> ¡ATENCIÓN!
-                        Actividades para Hoy</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="lead">Se encontraron actividades de Programación programadas para el día de hoy, <strong
-                            id="todayDateDisplay"></strong>:</p>
-                    <ul id="actividadesHoyList" class="list-group list-group-flush">
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-stm-primary" data-bs-dismiss="modal"
-                        onclick="document.getElementById('programaciones-tab').click()">
-                        Ver Programaciones
+                    <button id="btnNuevaMuestra" class="btn btn-custom-teal" onclick="showModal('Muestra')">
+                        <i class="fas fa-plus-circle"></i> Nueva Muestra
+                    </button>
+                    <button id="btnNuevaProgramacion" class="btn btn-custom-teal" style="display: none;"
+                        onclick="showModal('Programacion')">
+                        <i class="fas fa-plus-circle"></i> Nueva Programación
+                    </button>
+                    <button id="btnNuevoSocio" class="btn btn-custom-teal" style="display: none;"
+                        onclick="showModal('socios')">
+                        <i class="fas fa-plus-circle"></i> Nuevo Socio
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
 
+            <ul class="nav nav-tabs nav-justified" id="activityTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="muestras-tab" data-bs-toggle="tab" data-bs-target="#muestras"
+                        type="button" role="tab" aria-controls="muestras" aria-selected="true"
+                        onclick="setActiveTab('Muestra')">
+                        <i class="fas fa-camera-retro"></i> Muestras
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="programaciones-tab" data-bs-toggle="tab"
+                        data-bs-target="#programaciones" type="button" role="tab" aria-controls="programaciones"
+                        aria-selected="false" onclick="setActiveTab('Programacion')">
+                        <i class="fas fa-calendar-alt"></i> Programación
+                    </button>
+                </li>
+
+                <button class="nav-link" id="socios-tab" data-bs-toggle="tab" data-bs-target="#socios" type="button"
+                    role="tab" aria-controls="socios" aria-selected="false" onclick="setActiveTab('socios')">
+                    <i class="fas fa-users"></i> Socios
+                </button>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="muestras" role="tabpanel" aria-labelledby="muestras-tab">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle" id="muestrasTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 0; display:none;">ID</th>
+                                    <th scope="col" style="width: 25%;">Nombre</th>
+                                    <th scope="col" style="width: 20%;">Período</th>
+                                    <th scope="col" style="width: 35%;">Detalle</th>
+                                    <th scope="col" style="width: 5%; text-align: center;">Activo</th>
+                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="programaciones" role="tabpanel" aria-labelledby="programaciones-tab">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle" id="programacionesTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 0; display:none;">ID</th>
+                                    <th scope="col" style="width: 10%;">Fecha</th>
+                                    <th scope="col" style="width: 7%;">Hora</th>
+                                    <th scope="col" style="width: 20%;">Título</th>
+                                    <th scope="col" style="width: 23%;">Detalle</th>
+                                    <th scope="col" style="width: 15%;">Costo</th>
+                                    <th scope="col" style="width: 10%; text-align: center;">Activo</th>
+                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="socios" role="tabpanel" aria-labelledby="socios-tab">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle" id="sociosTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="display:none;">ID</th>
+                                    <th scope="col" style="width: 20%;">Apellido y Nombre</th>
+                                    <th scope="col" style="width: 10%;">DNI</th>
+                                    <th scope="col" style="width: 15%;">Email</th>
+                                    <th scope="col" style="width: 10%;">Cumple</th>
+                                    <th scope="col" style="width: 12%;">Celular</th>
+                                    <th scope="col" style="width: 13%;">Residencia</th>
+                                    <th scope="col" style="width: 5%; text-align: center;">Activo</th>
+                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal fade" id="actividadModal" tabindex="-1" aria-labelledby="actividadModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="actividadModalLabel">Crear Actividad</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <form id="actividadForm" class="needs-validation" novalidate>
+                        <div class="modal-body">
+                            <input type="hidden" id="actividadTipo" name="actividadTipo" value="">
+                            <input type="hidden" id="actividadId" name="actividadId" value="">
+
+                            <div id="formContent">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Estado de Actividad</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="activo" id="activoSI"
+                                            value="true" required>
+                                        <label class="form-check-label" for="activoSI">Activo (SI)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="activo" id="activoNO"
+                                            value="false" required>
+                                        <label class="form-check-label" for="activoNO">Inactivo (NO)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-custom-purple" id="saveActividadBtn">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="deleteConfirmModalLabel"><i class="fas fa-trash-alt"></i> Confirmar
+                            Eliminación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Estás seguro de que deseas eliminar esta actividad: <strong
+                                id="deleteActividadInfo"></strong>?
+                        </p>
+                        <p class="text-danger">¡Esta acción no se puede deshacer!</p>
+                        <input type="hidden" id="deleteId" value="">
+                        <input type="hidden" id="deleteTipo" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger"
+                            onclick="deleteActividad(document.getElementById('deleteId').value, document.getElementById('deleteTipo').value)">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="actividadHoyModal" tabindex="-1" aria-labelledby="actividadHoyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="actividadHoyModalLabel"><i class="fas fa-bell me-2"></i> ¡ATENCIÓN!
+                            Actividades para Hoy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="lead">Se encontraron actividades de Programación programadas para el día de hoy,
+                            <strong id="todayDateDisplay"></strong>:
+                        </p>
+                        <ul id="actividadesHoyList" class="list-group list-group-flush">
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-stm-primary" data-bs-dismiss="modal"
+                            onclick="document.getElementById('programaciones-tab').click()">
+                            Ver Programaciones
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i> Confirmar Eliminación
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="confirmDeleteMessage" class="fs-5"></p>
+                        <p class="text-muted small">Esta acción no se puede deshacer.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btnDoDelete" class="btn btn-danger">Eliminar Definitivamente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -512,7 +640,38 @@
         let activeTab = 'Muestra';
         let actividadesCache = [];
 
+        // AGREGADO: Función para cerrar sesión
+        function logout() {
+            // Limpiamos el localStorage con la clave correcta
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('adminLoggedIn');
+
+            // Mandamos al usuario al login
+            window.location.href = 'login.html';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            // --- AGREGADO: VERIFICACIÓN DE SEGURIDAD ---
+            const usuarioLogueado = JSON.parse(localStorage.getItem('usuario'));
+
+            if (!usuarioLogueado) {
+                // Si no hay datos en el localStorage, mandalo al login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (nameDisplay) {
+                nameDisplay.innerText = usuarioLogueado.nombre || "Usuario";
+            }
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('adminLoggedIn');
+
+            // Si llegó acá, es porque está logueado. Mostramos el contenido.
+            document.getElementById('mainContent').style.display = 'block';
+            console.log("Bienvenido: " + (usuarioLogueado.nombre || "Usuario"));
+            // -------------------------------------------
+
             // Inicializar Modales
             actividadModal = new bootstrap.Modal(document.getElementById('actividadModal'));
             deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
@@ -581,7 +740,7 @@
                     // Comparamos los strings: "NO" viene antes que "SI" alfabéticamente
                     const activoA = (a.activo || "SI").toUpperCase();
                     const activoB = (b.activo || "SI").toUpperCase();
-                    
+
                     if (activoA !== activoB) {
                         // Usamos localeCompare para que "NO" quede arriba de "SI"
                         return activoA.localeCompare(activoB);
@@ -758,8 +917,9 @@
     <div class="mb-3">
         <label class="form-label">Permiso</label>
         <select class="form-select" name="userPermiso" id="Permiso" required>
-            <option value="ADMIN">ADMIN</option>
-            <option value="USER">USER</option>
+             <option value="USER">USER</option>
+             <option value="ADMIN">ADMIN</option>
+           
         </select>
     </div>
 `;
@@ -843,6 +1003,21 @@
 
         function setActiveTab(tipo) {
             activeTab = tipo;
+
+            // 1. Manejo de visibilidad de botones
+            document.getElementById('btnNuevaMuestra').style.display = (tipo === 'Muestra') ? 'block' : 'none';
+            document.getElementById('btnNuevaProgramacion').style.display = (tipo === 'Programacion') ? 'block' : 'none';
+            document.getElementById('btnNuevoSocio').style.display = (tipo === 'socios') ? 'block' : 'none';
+
+            // 2. Manejo del buscador (solo para socios)
+            const searchContainer = document.getElementById('searchContainer');
+            if (tipo === 'socios') {
+                searchContainer.style.display = 'block';
+                document.getElementById('searchInput').value = ''; // Limpiar búsqueda al entrar
+            } else {
+                searchContainer.style.display = 'none';
+            }
+
             fetchActividades();
         }
 
@@ -1113,7 +1288,7 @@
          */
         async function handleFormSubmission() {
             const form = document.getElementById('actividadForm');
-            const actividadId = document.getElementById('actividadId').value; 
+            const actividadId = document.getElementById('actividadId').value;
             const tipo = document.getElementById('actividadTipo').value;
             const btnTexto = document.getElementById('saveActividadBtn').textContent;
 
@@ -1166,28 +1341,28 @@
                 setLoadingState(false);
 
                 if (data.status === 'success') {
-    // NUEVA LÓGICA DE SEGURIDAD PARA SOCIOS INACTIVOS
-    const esInactivo = formData.get('activo') === 'false';
-    
-    if (tipo === 'socios' && actividadId && esInactivo) {
-        // Si desactivamos un socio existente, mandamos a borrar su usuario por seguridad
-        // No hace falta esperar la respuesta para cerrar el modal principal
-        fetch(`${WEB_APP_URL}?action=DELETE&id=${actividadId}&actividadTipo=user`, { method: 'POST' })
-            .then(res => res.json())
-            .then(userData => {
-                if(userData.status === 'success') {
-                    console.log("Usuario eliminado por inactividad del socio.");
-                }
-            })
-            .catch(err => console.error("Error al quitar acceso:", err));
-    }
+                    // NUEVA LÓGICA DE SEGURIDAD PARA SOCIOS INACTIVOS
+                    const esInactivo = formData.get('activo') === 'false';
 
-    actividadModal.hide();
-    showFeedback("¡Listo! Datos actualizados y acceso revocado si correspondía.", true);
-    fetchActividades(); 
-} else {
-    showFeedback(`Error: ${data.message}`, false);
-}
+                    if (tipo === 'socios' && actividadId && esInactivo) {
+                        // Si desactivamos un socio existente, mandamos a borrar su usuario por seguridad
+                        // No hace falta esperar la respuesta para cerrar el modal principal
+                        fetch(`${WEB_APP_URL}?action=DELETE&id=${actividadId}&actividadTipo=user`, { method: 'POST' })
+                            .then(res => res.json())
+                            .then(userData => {
+                                if (userData.status === 'success') {
+                                    console.log("Usuario eliminado por inactividad del socio.");
+                                }
+                            })
+                            .catch(err => console.error("Error al quitar acceso:", err));
+                    }
+
+                    actividadModal.hide();
+                    showFeedback("¡Listo! Datos actualizados y acceso revocado si correspondía.", true);
+                    fetchActividades();
+                } else {
+                    showFeedback(`Error: ${data.message}`, false);
+                }
             } catch (error) {
                 setLoadingState(false);
                 showFeedback(`Error de conexión: ${error.message}`, false);
@@ -1261,7 +1436,7 @@
             const day = String(today.getDate()).padStart(2, '0');
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const year = today.getFullYear();
-            const formattedDate = `${year}-${month}-${day}`; 
+            const formattedDate = `${year}-${month}-${day}`;
 
             const todayDisplay = today.toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             if (document.getElementById('todayDateDisplay')) {
@@ -1395,7 +1570,7 @@
 
         }
 
-        let deleteInfo = {}; 
+        let deleteInfo = {};
 
         document.addEventListener('DOMContentLoaded', function () {
             const btnDoDelete = document.getElementById('btnDoDelete');
@@ -1428,28 +1603,30 @@
                 };
             }
         });
+        function filterSocios() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('sociosTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) { // Empezamos en 1 para saltar el encabezado
+                const tdNombre = tr[i].getElementsByTagName('td')[1]; // Columna Apellido y Nombre
+                const tdDni = tr[i].getElementsByTagName('td')[2];    // Columna DNI
+
+                if (tdNombre || tdDni) {
+                    const txtValueNombre = tdNombre.textContent || tdNombre.innerText;
+                    const txtValueDni = tdDni.textContent || tdDni.innerText;
+
+                    if (txtValueNombre.toLowerCase().indexOf(filter) > -1 || txtValueDni.indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
 
     </script>
-
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i> Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="confirmDeleteMessage" class="fs-5"></p>
-                    <p class="text-muted small">Esta acción no se puede deshacer.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btnDoDelete" class="btn btn-danger">Eliminar Definitivamente</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>
