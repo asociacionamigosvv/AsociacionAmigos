@@ -436,7 +436,7 @@
     </div>
     <div class="app-container">
 
-        <header class="p-5 bg-white text-gray-800 flex-shrink-0 relative flex flex-col items-center">
+                <header class="p-5 bg-white text-gray-800 flex-shrink-0 relative flex flex-col items-center">
 
             <img src="logo AAVV.png" alt="Logo Villa Victoria" class="large-logo" />
 
@@ -448,10 +448,7 @@
                 <h1 class="header-title text-3xl sm:text-4xl">
                     Asociación Amigos Villa Victoria
                 </h1>
-                <p class="text-gray-500 text-sm font-light mt-1">
-                    Centro Cultural Victoria Ocampo - Villa Victoria - Mar del Plata - Batán - Partido de General
-                    Pueyrredon.
-                </p>
+                
             </div>
 
         </header>
@@ -670,6 +667,8 @@ function validatePagoForm() {
     const fecha = document.getElementById('pagoFecha').value;
     const tipo = document.getElementById('pagoTipo').value;
 
+
+    // ASI ESTABA ANTES PARA QUE SEA OBLIGATORIO: if (monto && fecha && tipo && isComprobanteOk) {
     if (monto && fecha && tipo ) {
         btnSubmit.disabled = false;
         btnSubmit.classList.remove('bg-gray-400', 'cursor-not-allowed');
@@ -1084,40 +1083,54 @@ function validatePagoForm() {
                 const periodo = muestra.Periodo || muestra.periodo || Object.values(muestra)[1] || 'Sin Período';
                 const detalle = muestra.Detalle || muestra.detalle || Object.values(muestra)[2] || 'Detalle no especificado.';
 
-                const { cardClass } = getHoraColorClass(periodo, '23:59');
+                // --- LÓGICA DE COLORES CORREGIDA ---
+                // Normalizamos el texto: quitamos espacios, pasamos a minúsculas y sacamos acentos
+                const textoMuestra = periodo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                let badgeStyle = "";
 
+                // El color del logo que me digas va acá (uso el #0077B6 por ahora)
+                const azulLogo = "#0077B6";
+                const rojoColorado = "#B91C1C";
+
+                if (textoMuestra.includes("temporaria")) {
+                    // AZUL COMO EL LOGO
+                    badgeStyle = `background-color: rgba(48, 181, 170, 0.1); color: ${azulLogo}; border: 1px solid ${azulLogo}4D; font-weight: 700;`;
+                } else if (textoMuestra.includes("permanente")) {
+                    // COLORADO
+                    badgeStyle = `background-color: rgba(185, 28, 28, 0.1); color: ${rojoColorado}; border: 1px solid ${rojoColorado}4D; font-weight: 700;`;
+                } else {
+                    badgeStyle = "background-color: #f3f4f6; color: #4b5563;";
+                }
+                // -----------------------------------
+
+                const { cardClass } = getHoraColorClass(periodo, '23:59');
                 const card = document.createElement('div');
                 card.className = `muestra-card ${cardClass}`;
-
-                card.onclick = function () {
-                    toggleMuestra(this);
-                };
+                card.onclick = function () { toggleMuestra(this); };
 
                 const headerBgClass = cardClass ? 'bg-white' : 'bg-white hover:bg-gray-50 active:bg-gray-100';
 
                 card.innerHTML = `
-                    <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
-                        <div class="flex-1 min-w-0 pr-4">
-                            <div class="flex items-center mb-2">
-                                <span class="tag-badge bg-green-100 text-green-700">
-                                    <i class="fas fa-calendar-alt mr-1"></i> ${periodo} 
-                                </span>
-                                </div>
-                            <h2 class="text-lg font-bold text-gray-900 mt-1">${nombre}</h2>
-                        </div>
-                        
-                        <div class="flex-shrink-0 pt-3">
-                            <i class="fas fa-chevron-down chevron text-gray-500"></i>
-                        </div>
+            <div class="p-4 flex items-start justify-between ${headerBgClass} transition duration-150 rounded-lg">
+                <div class="flex-1 min-w-0 pr-4">
+                    <div class="flex items-center mb-2">
+                        <span class="tag-badge" style="${badgeStyle}">
+                            <i class="fas fa-calendar-alt mr-1"></i> ${periodo} 
+                        </span>
                     </div>
-                    
-                    <div class="muestra-content">
-                        <div class="text-base text-gray-700 leading-relaxed">
-                            <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
-                            <p class="text-sm detalle-content">${detalle}</p> 
-                        </div>
-                    </div>
-                `;
+                    <h2 class="text-lg font-bold text-gray-900 mt-1">${nombre}</h2>
+                </div>
+                <div class="flex-shrink-0 pt-3">
+                    <i class="fas fa-chevron-down chevron text-gray-500"></i>
+                </div>
+            </div>
+            <div class="muestra-content">
+                <div class="text-base text-gray-700 leading-relaxed">
+                    <h3 class="font-bold mb-3 border-b border-gray-200 pb-1 text-md text-[var(--color-primary)]">Detalle:</h3>
+                    <p class="text-sm detalle-content">${detalle}</p> 
+                </div>
+            </div>
+        `;
                 dataList.appendChild(card);
             });
         }
@@ -1331,7 +1344,7 @@ function validatePagoForm() {
                             <p class="text-lg font-bold text-[var(--color-accent)]">$ ${p.monto}</p>
                         </div>
                         <div class="text-right">
-                            <span class="text-[9px] bg-white/20 text-white px-2 py-1 rounded">
+                            <span class="text-[14px] bg-white/20 text-white px-2 py-1 rounded">
                                 ${p.tipo_pago || p.tipoPago || 'Pago'}
                             </span>
                         </div>`;
