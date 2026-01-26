@@ -9,19 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* CONSTANTES DE COLOR ajustadas al color del encabezado (Dark Gray) */
+   <style>
+        /* CONSTANTES DE COLOR */
         :root {
             --stm-main-color: #2D3748;
-            /* Color unificado principal (Gris Oscuro) */
             --stm-teal: #34B3C5;
-            /* Turquesa (Crear) - Se mantiene para diferenciar la acción de creación */
             --stm-red: #dc3545;
-            /* Rojo (Eliminar) */
             --stm-gray: #f8f9fa;
-            /* Fondo de página */
             --stm-light-main: #4A5568;
-            /* Gris más claro para hover */
         }
 
         body {
@@ -30,61 +25,48 @@
             padding-top: 20px;
         }
 
-        /* --- AGREGADO: PROTECCIÓN VISUAL --- */
         #mainContent {
             display: none;
         }
 
-        /* Diseño moderno para el buscador */
-/* Buscador minimalista alineado con botones */
-.search-container {
-    display: flex;
-    align-items: center;
-}
+        /* Buscador */
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
 
-.search-input-custom {
-    border-radius: 50px !important;
-    padding: 0 20px !important; /* Espaciado interno equilibrado */
-    border: 2px solid var(--stm-teal) !important;
-    transition: all 0.3s ease;
-    height: 38px; /* Altura exacta para alinear con .btn */
-    min-width: 250px;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
+        .search-input-custom {
+            border-radius: 50px !important;
+            padding: 0 20px !important;
+            border: 2px solid var(--stm-teal) !important;
+            transition: all 0.3s ease;
+            height: 38px;
+            min-width: 250px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
 
-.search-input-custom:focus {
-    box-shadow: 0 0 0 0.2rem rgba(52, 179, 197, 0.25) !important;
-    outline: none;
-}
+        .search-input-custom:focus {
+            box-shadow: 0 0 0 0.2rem rgba(52, 179, 197, 0.25) !important;
+            outline: none;
+        }
 
-/* Para que el placeholder no sea tan fuerte */
-.search-input-custom::placeholder {
-    color: #a0a0a0;
-}
+        .search-input-custom::placeholder {
+            color: #a0a0a0;
+        }
 
         .header-section {
             background-color: white;
-            /* Fondo blanco */
             color: #2D3748;
-            /* Letras en gris oscuro/negro */
-            padding: 30px 0;
-            /* Un poco más de aire */
+            padding: 30px 15px;
             border-radius: 8px 8px 0 0;
             border-bottom: 1px solid #dee2e6;
-            /* Una línea sutil para separar */
             position: relative;
-            /* AGREGADO: Para posicionar el botón de logout */
         }
 
         .header-logo {
             max-width: 180px;
-            /* Logo más grande */
             height: auto;
-            border-radius: 0;
-            /* Sin círculo */
-            border: none;
-            /* Sin borde blanco */
             margin-bottom: 15px;
         }
 
@@ -94,9 +76,9 @@
             background-color: white;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
+            overflow: hidden;
         }
 
-        /* Color del encabezado de la tarjeta/tabla */
         .card-header-custom {
             background-color: var(--stm-main-color);
             color: white;
@@ -104,7 +86,6 @@
             font-weight: 700;
         }
 
-        /* Botón Crear (se mantiene el turquesa para diferenciar la acción principal) */
         .btn-custom-teal {
             background-color: var(--stm-teal);
             border-color: var(--stm-teal);
@@ -119,7 +100,6 @@
             transform: translateY(-1px);
         }
 
-        /* Botón Guardar / Botones Principales (antes púrpura, ahora gris oscuro principal) */
         .btn-custom-purple,
         .btn-stm-primary {
             background-color: var(--stm-main-color) !important;
@@ -128,18 +108,8 @@
             transition: all 0.2s;
         }
 
-        .btn-custom-purple:hover,
-        .btn-stm-primary:hover {
-            background-color: var(--stm-light-main) !important;
-            border-color: var(--stm-light-main) !important;
-            color: white !important;
-            transform: translateY(-1px);
-        }
-
-        /* Estilo para el botón de Logout similar al de 'Crear' pero con otro color si querés */
         .btn-custom-logout {
             background-color: #6c757d;
-            /* Gris para que no compita tanto con el verde/azul */
             color: white;
             border: none;
             padding: 10px 20px;
@@ -148,19 +118,8 @@
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-custom-logout:hover {
-            background-color: #5a6268;
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Si querés que sea rojo como el de eliminar, cambiá el background-color a #dc3545 */
-
-        /* Pestañas activas y hover */
         .nav-link.active,
         .nav-link:hover {
             color: var(--stm-main-color) !important;
@@ -174,174 +133,156 @@
             background-color: white;
         }
 
-        /* MODIFICACIÓN: Ajuste para eliminar recuadro blanco sobrante */
         .tab-content {
             padding: 0 !important;
-            /* Esto elimina el espacio blanco de abajo y los costados */
             border: none !important;
-            /* Esto quita el borde que enmarca el recuadro */
         }
 
         .table-responsive {
             margin-top: 0;
-            /* Asegura que la tabla empiece pegada a la pestaña */
             border-radius: 0 0 8px 8px;
-            /* Redondea solo las esquinas de abajo */
-            overflow: hidden;
-        }
-
-        .table {
-            margin-bottom: 0;
-            /* Eliminamos el margen inferior de la tabla */
+            overflow-x: hidden; /* Cambiado para manejar el responsive por filas */
         }
 
         .table thead th {
             background-color: #f8f9fa;
-            /* Un poco más claro */
             color: var(--stm-main-color);
             border-bottom: 2px solid #dee2e6;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Ajuste específico para que los botones de acciones se vean como en tu captura */
         .action-btns {
             display: flex !important;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            /* Más espacio entre botones */
-            /* padding: 8px !important;  <-- Quitamos padding forzado aquí para que no afecte la altura de la celda */
-            white-space: nowrap;
+            gap: 5px;
         }
 
         .action-btns .btn {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
             border-radius: 6px;
-            /* Bordes un poco más redondeados */
         }
 
-        /* Alineación general para todos los encabezados de acciones */
-        th[scope="col"]:last-child {
-            text-align: center !important;
-        }
-
-        /* Iconos de editar en la tabla (usando el color principal) */
-        .btn-primary {
-            background-color: var(--stm-main-color) !important;
-            border-color: var(--stm-main-color) !important;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--stm-light-main) !important;
-            border-color: var(--stm-light-main) !important;
-        }
-
-        /* Modal Header (Color unificado) */
-        .modal-header {
-            background-color: var(--stm-main-color) !important;
-            color: white !important;
-        }
-
-        /* Color de carga (Loading) */
-        .loading-text {
-            margin-left: 10px;
-            font-weight: bold;
-            color: var(--stm-main-color);
-        }
-
+        /* Loading y Feedback */
         .loading-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1050;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; visibility: hidden; opacity: 0; transition: opacity 0.3s;
         }
-
-        .loading-overlay.visible {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .main-header {
-            position: sticky;
-            /* Lo deja fijo al hacer scroll */
-            top: 0;
-            /* Pegado al borde superior */
-            z-index: 1000;
-            /* Se asegura de que pase por ENCIMA de la tabla y botones */
-            background-color: var(--stm-main-color);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            /* Sombra para que se note el relieve al scrollear */
-        }
+        .loading-overlay.visible { visibility: visible; opacity: 1; }
 
         .feedback {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1100;
-            min-width: 250px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(-20px);
+            position: fixed; top: 20px; right: 20px; z-index: 2100;
+            min-width: 250px; padding: 15px; display: none; border-radius: 8px;
         }
 
-        .feedback.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* --- AJUSTES PARA CELULAR --- */
+        @media (max-width: 768px) {
+            header.main-header {
+                flex-direction: column;
+                padding: 10px !important;
+            }
+            header.main-header h1 { font-size: 1.1rem; text-align: center; margin-bottom: 10px; }
+            
+            .header-section h1 { font-size: 1.5rem; }
+            .header-section p { font-size: 0.9rem; }
 
-        .feedback.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+            /* Contenedor de botones y búsqueda */
+            .d-flex.justify-content-between.align-items-center.p-3 {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .d-flex.gap-2.align-items-center {
+                flex-direction: column;
+                width: 100%;
+            }
+            .search-wrapper, .btn-custom-teal {
+                width: 100% !important;
+            }
+            .search-input-custom { min-width: 100%; }
 
-        .feedback.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+            /* MAGIA PARA LA TABLA: Convertir filas en tarjetas */
+            .table, .table thead, .table tbody, .table th, .table td, .table tr { 
+                display: block; 
+            }
+            
+            .table thead tr { 
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            .table tr { 
+                border: 1px solid #ccc; 
+                margin-bottom: 10px;
+                background: white;
+                border-radius: 8px;
+                padding: 5px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            
+            .table td { 
+                border: none;
+                border-bottom: 1px solid #eee; 
+                position: relative;
+                padding-left: 50% !important; 
+                text-align: right !important;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
 
-        /* Estilos específicos para el modal de formulario */
-        .form-label {
-            font-weight: 500;
-        }
+            .table td:last-child { border-bottom: 0; }
+            
+            /* Agregamos los nombres de las columnas antes de cada dato */
+            .table td:before { 
+                position: absolute;
+                left: 10px;
+                width: 45%; 
+                padding-right: 10px; 
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                color: var(--stm-main-color);
+            }
 
-        /* Estilos para el modal de actividades de hoy */
-        #actividadHoyModal .modal-header {
-            background-color: #ffc107 !important;
-            /* Amarillo de Bootstrap 'warning' (Se mantiene para diferenciación de alerta) */
-            color: #212529 !important;
-            /* Texto oscuro */
-        }
+            /* Muestras */
+            #muestrasTable td:nth-of-type(2):before { content: "Nombre"; }
+            #muestrasTable td:nth-of-type(3):before { content: "Período"; }
+            #muestrasTable td:nth-of-type(4):before { content: "Detalle"; }
+            #muestrasTable td:nth-of-type(5):before { content: "Activo"; }
+            #muestrasTable td:nth-of-type(6):before { content: "Acciones"; }
 
-        /* Estilos para las pestañas con iconos */
-        .nav-link i {
-            margin-right: 5px;
+            /* Programación */
+            #programacionesTable td:nth-of-type(2):before { content: "Fecha"; }
+            #programacionesTable td:nth-of-type(3):before { content: "Hora"; }
+            #programacionesTable td:nth-of-type(4):before { content: "Título"; }
+            #programacionesTable td:nth-of-type(5):before { content: "Detalle"; }
+            #programacionesTable td:nth-of-type(6):before { content: "Costo"; }
+            #programacionesTable td:nth-of-type(7):before { content: "Activo"; }
+            #programacionesTable td:nth-of-type(8):before { content: "Acciones"; }
+
+            /* Socios (El que más se corta) */
+            #sociosTable td:nth-of-type(2):before { content: "Socio"; }
+            #sociosTable td:nth-of-type(3):before { content: "DNI"; }
+            #sociosTable td:nth-of-type(4):before { content: "Email"; }
+            #sociosTable td:nth-of-type(5):before { content: "Cumple"; }
+            #sociosTable td:nth-of-type(6):before { content: "Celular"; }
+            #sociosTable td:nth-of-type(7):before { content: "Residencia"; }
+            #sociosTable td:nth-of-type(8):before { content: "Activo"; }
+            #sociosTable td:nth-of-type(9):before { content: "Acciones"; }
+
+            .action-btns { justify-content: flex-end; width: 100%; }
         }
     </style>
 </head>
@@ -398,7 +339,7 @@
                 <h2 class="h4 mb-0">Listado de Actividades</h2>
                 <div class="d-flex gap-2 align-items-center">
                     <div id="searchContainer" class="search-wrapper" style="display: none; min-width: 250px;">
-                        
+
                         <input type="text" id="searchInput" class="form-control form-control-sm search-input-custom"
                             placeholder="Buscar por nombre o DNI..." onkeyup="filterSocios()">
                     </div>
@@ -509,7 +450,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="actividadModalLabel">Crear Actividad</h5>
+                        <h5 class="modal-title" id="actividadModalLabel">Alta/h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
