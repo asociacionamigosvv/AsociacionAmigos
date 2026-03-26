@@ -36,32 +36,34 @@
         }
 
         /* Diseño moderno para el buscador */
-/* Buscador minimalista alineado con botones */
-.search-container {
-    display: flex;
-    align-items: center;
-}
+        /* Buscador minimalista alineado con botones */
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
 
-.search-input-custom {
-    border-radius: 50px !important;
-    padding: 0 20px !important; /* Espaciado interno equilibrado */
-    border: 2px solid var(--stm-teal) !important;
-    transition: all 0.3s ease;
-    height: 38px; /* Altura exacta para alinear con .btn */
-    min-width: 250px;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
+        .search-input-custom {
+            border-radius: 50px !important;
+            padding: 0 20px !important;
+            /* Espaciado interno equilibrado */
+            border: 2px solid var(--stm-teal) !important;
+            transition: all 0.3s ease;
+            height: 38px;
+            /* Altura exacta para alinear con .btn */
+            min-width: 250px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
 
-.search-input-custom:focus {
-    box-shadow: 0 0 0 0.2rem rgba(52, 179, 197, 0.25) !important;
-    outline: none;
-}
+        .search-input-custom:focus {
+            box-shadow: 0 0 0 0.2rem rgba(52, 179, 197, 0.25) !important;
+            outline: none;
+        }
 
-/* Para que el placeholder no sea tan fuerte */
-.search-input-custom::placeholder {
-    color: #a0a0a0;
-}
+        /* Para que el placeholder no sea tan fuerte */
+        .search-input-custom::placeholder {
+            color: #a0a0a0;
+        }
 
         .header-section {
             background-color: white;
@@ -343,6 +345,129 @@
         .nav-link i {
             margin-right: 5px;
         }
+
+        /* =====================================================
+           RESPONSIVE - MÓVIL
+        ===================================================== */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 0;
+            }
+
+            .main-header h1 {
+                font-size: 1rem !important;
+            }
+
+            .main-header img {
+                height: 30px !important;
+            }
+
+            #userBadge {
+                display: none !important;
+            }
+
+            .header-logo {
+                max-width: 110px;
+            }
+
+            .main-container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .header-section h1 {
+                font-size: 1.3rem;
+            }
+
+            /* Toolbar de botones: apilar verticalmente */
+            .d-flex.justify-content-between.align-items-center.p-3 {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            .d-flex.gap-2.align-items-center {
+                flex-wrap: wrap;
+            }
+
+            /* Pestañas: texto más pequeño */
+            .nav-link {
+                font-size: 0.78rem;
+                padding: 8px 6px;
+            }
+
+            /* Tabla: scroll horizontal */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Buscador ocupa todo el ancho */
+            .search-input-custom {
+                min-width: 100% !important;
+                width: 100%;
+            }
+
+            #searchContainer {
+                min-width: 100% !important;
+                width: 100%;
+            }
+
+            /* Modal: ocupa casi toda la pantalla */
+            .modal-dialog {
+                margin: 10px auto;
+            }
+
+            .modal-lg {
+                max-width: 98vw;
+            }
+
+            /* Botones de acción más pequeños en móvil */
+            .action-btns-desktop {
+                display: none !important; /* Ocultamos los botones regulares en móvil */
+            }
+
+            .mobile-actions-trigger {
+                cursor: pointer;
+            }
+
+            /* Ocultamos la cabecera de la columna de acciones en móvil */
+            .th-acciones-desktop {
+                display: none !important;
+            }
+            
+            /* Hacemos que la celda de acciones se oculte también */
+            .td-acciones-desktop {
+                display: none !important;
+            }
+            .action-btns {
+                gap: 2px !important;
+                flex-wrap: wrap;
+                /* Permitir que los botones se acomoden en varias líneas si es necesario */
+                justify-content: center;
+            }
+
+            .action-btns .btn {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 0.70rem !important;
+                padding: 0 !important;
+            }
+
+            /* Asegurar que el contenedor de la celda de acciones se vea completo en móvil */
+            th.text-center:last-child,
+            td.text-center:last-child {
+                min-width: 140px;
+                /* Ancho suficiente para los 4 botones en una fila, o 2 y 2 */
+            }
+
+            /* Feedback toast: ancho completo en móvil */
+            .feedback {
+                right: 10px;
+                left: 10px;
+                min-width: unset;
+            }
+        }
     </style>
 </head>
 
@@ -398,7 +523,7 @@
                 <h2 class="h4 mb-0">Listado de Actividades</h2>
                 <div class="d-flex gap-2 align-items-center">
                     <div id="searchContainer" class="search-wrapper" style="display: none; min-width: 250px;">
-                        
+
                         <input type="text" id="searchInput" class="form-control form-control-sm search-input-custom"
                             placeholder="Buscar por nombre o DNI..." onkeyup="filterSocios()">
                     </div>
@@ -493,7 +618,7 @@
                                     <th scope="col" style="width: 12%;">Celular</th>
                                     <th scope="col" style="width: 13%;">Residencia</th>
                                     <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -624,6 +749,35 @@
             </div>
         </div>
 
+        <!-- MODAL: NUEVOS SOCIOS DEL DÍA -->
+        <div class="modal fade" id="nuevosSociosHoyModal" tabindex="-1" aria-labelledby="nuevosSociosHoyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="nuevosSociosHoyModalLabel">
+                            <i class="fas fa-user-plus me-2"></i> ¡Nuevos Socios Hoy!
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="lead">
+                            Se registraron nuevos socios el día de hoy,
+                            <strong id="nuevosSociosFechaDisplay"></strong>:
+                        </p>
+                        <ul id="nuevosSociosHoyList" class="list-group list-group-flush"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-stm-primary" data-bs-dismiss="modal"
+                            onclick="document.getElementById('socios-tab').click()">
+                            Ver Socios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"></script>
@@ -637,6 +791,8 @@
         let actividadModal;
         let deleteConfirmModal;
         let actividadHoyModal; // Declaración de la variable para el modal de hoy
+        let nuevosSociosHoyModal; // Modal de nuevos socios del día
+        let mobileActionsModal; // Modal de acciones en móvil
         let activeTab = 'Muestra';
         let actividadesCache = [];
 
@@ -677,6 +833,10 @@
             deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
             // Inicialización correcta del Modal de Actividades para Hoy
             actividadHoyModal = new bootstrap.Modal(document.getElementById('actividadHoyModal'));
+            // Inicialización del Modal de Nuevos Socios del Día
+            nuevosSociosHoyModal = new bootstrap.Modal(document.getElementById('nuevosSociosHoyModal'));
+            // Inicialización del Modal de Acciones Móvil
+            mobileActionsModal = new bootstrap.Modal(document.getElementById('mobileActionsModal'));
 
             // Asignar manejador de envío al botón del modal
             document.getElementById('saveActividadBtn').addEventListener('click', handleFormSubmission);
@@ -684,6 +844,7 @@
             // Inicializar la tabla activa y chequear actividades de hoy
             fetchActividades();
             checkTodayActivities(); // <--- ESTA FUNCIÓN SE LLAMA AL CARGAR
+            checkNewMembersToday(); // <--- CHEQUEA NUEVOS SOCIOS DEL DÍA
         });
 
         // =================================================================
@@ -1472,6 +1633,88 @@
             }
         }
 
+        /**
+         * Consulta a Apps Script por socios creados hoy y muestra el modal si hay.
+         */
+        async function checkNewMembersToday() {
+            // Usamos la fecha local Argentina ajustando con offset
+            const now = new Date();
+            // Fecha local YYYY-MM-DD usando hora local del navegador
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayISO = `${year}-${month}-${day}`;
+
+            const todayDisplay = now.toLocaleDateString('es-AR', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            const fechaEl = document.getElementById('nuevosSociosFechaDisplay');
+            if (fechaEl) fechaEl.textContent = todayDisplay;
+
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=READ_ALL&actividadTipo=socios`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.actividades && data.actividades.length > 0) {
+                    // Filtramos socios cuya f_ingreso (o id como timestamp) coincida con hoy
+                    // El backend puede devolver f_ingreso o fecha_ingreso; usamos el campo id como fallback
+                    const nuevosSociosHoy = data.actividades.filter(socio => {
+                        // Intentamos detectar campos típicos de fecha de ingreso
+                        const camposFecha = [socio.f_ingreso, socio.fecha_ingreso, socio.fechaIngreso, socio.created_at, socio.fecha_alta];
+                        for (const campo of camposFecha) {
+                            if (campo) {
+                                const fechaCampo = new Date(campo);
+                                if (!isNaN(fechaCampo.getTime())) {
+                                    const fYear = fechaCampo.getFullYear();
+                                    const fMonth = String(fechaCampo.getMonth() + 1).padStart(2, '0');
+                                    const fDay = String(fechaCampo.getDate()).padStart(2, '0');
+                                    if (`${fYear}-${fMonth}-${fDay}` === todayISO) return true;
+                                }
+                                // También aceptamos formato DD/MM/YYYY
+                                if (typeof campo === 'string' && campo.includes('/')) {
+                                    const partes = campo.split('/');
+                                    if (partes.length === 3) {
+                                        const fDay2 = partes[0].padStart(2, '0');
+                                        const fMonth2 = partes[1].padStart(2, '0');
+                                        const fYear2 = partes[2];
+                                        if (`${fYear2}-${fMonth2}-${fDay2}` === todayISO) return true;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    });
+
+                    if (nuevosSociosHoy.length > 0) {
+                        const list = document.getElementById('nuevosSociosHoyList');
+                        if (list) {
+                            list.innerHTML = '';
+                            nuevosSociosHoy.forEach(socio => {
+                                const li = document.createElement('li');
+                                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                                const nombreCompleto = `${socio.Apellido || ''}, ${socio.Nombre || ''}`;
+                                li.innerHTML = `
+                                    <div>
+                                        <h6 class="mb-0 text-dark">${nombreCompleto.trim()}</h6>
+                                        <small class="text-muted">DNI: ${socio.nro_dni || '-'} &nbsp;|&nbsp; ${socio.email || '-'}</small>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill"><i class="fas fa-user-check"></i> Nuevo</span>
+                                `;
+                                list.appendChild(li);
+                            });
+                            // Mostrar el modal después de un breve delay para que no choque con el de actividades
+                            setTimeout(() => {
+                                if (nuevosSociosHoyModal) nuevosSociosHoyModal.show();
+                            }, 1500);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al chequear nuevos socios de hoy:', error);
+            }
+        }
+
         // =================================================================
         // RENDERIZADO DE TABLAS (ACTUALIZADO)
         // =================================================================
@@ -1496,9 +1739,13 @@
                     const esActivo = act.activo === 'SI';
                     const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
                     const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary';
+                    
+                    // Comillas escapadas cuidadosamente para la función inline
+                    const nombreSocioSafe = nombreSocio.replace(/'/g, "\\'");
 
                     row.innerHTML = `
                 <td style="display:none;">${act.id}</td> 
+                <!-- Envolvemos las celdas en un div clickeable SOLO PARA MÓVIL, pero para no romper la tabla de bootstrap en desktop, usamos onclick directamente en el TR (ver abajo) -->
                 <td>${nombreSocio}</td>
                 <td>${act.nro_dni}</td>
                 <td>${act.email}</td>
@@ -1506,23 +1753,32 @@
                 <td>${act.tel_cel}</td>
                 <td>${act.lugar_residencia}</td>
                 <td class="text-center">${badgeActivo}</td>
-                <td class="text-center">
-                    <div class="action-btns">
-                        <button class="btn btn-sm ${claseBotonUser}" onclick="showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
+                <!-- Columna de acciones original (se oculta en móvil vía CSS) -->
+                <td class="text-center td-acciones-desktop">
+                    <div class="action-btns action-btns-desktop">
+                        <button class="btn btn-sm ${claseBotonUser}" onclick="event.stopPropagation(); showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
                             <i class="fas fa-user-lock"></i>
                         </button>
-                        <button class="btn btn-sm btn-success" onclick="showModal('pagos', '${act.id}')" title="Gestión de Pagos">
+                        <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); showModal('pagos', '${act.id}')" title="Gestión de Pagos">
                             <i class="fas fa-dollar-sign"></i>
                         </button>
-                        <button class="btn btn-sm btn-primary" onclick="showModal('socios', '${act.id}')" title="Editar Socio">
+                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('socios', '${act.id}')" title="Editar Socio">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'socios', '${nombreSocio}')" title="Eliminar">
+                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'socios', '${nombreSocioSafe}')" title="Eliminar">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </td>`;
 
+                    // Al hacer click en cualquier parte de la fila en móvil que dispare el modal de acciones
+                    row.classList.add('mobile-actions-trigger');
+                    row.onclick = function() {
+                        // Solo abrir en modo móvil (menos de 768px). Usamos innerWidth en javascript.
+                        if (window.innerWidth <= 768) {
+                            showMobileActions(act.id, nombreSocioSafe, esActivo);
+                        }
+                    };
 
                 } else if (tipoLower === 'muestra') {
                     row.innerHTML = `
@@ -1568,6 +1824,39 @@
                 }
             });
 
+        }
+
+        /**
+         * Nueva función que abre un Modal grande con botones de acción grandes
+         * SOLAMENTE en la vista de Móvil
+         */
+        function showMobileActions(id, nombre, esActivo) {
+            document.getElementById('mobileActionsSocioName').textContent = nombre;
+            
+            const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary text-white';
+            const disabledAttr = esActivo ? '' : 'disabled';
+            
+            const container = document.getElementById('mobileActionsContainer');
+            container.innerHTML = `
+                <button class="btn btn-lg ${claseBotonUser} d-flex align-items-center justify-content-center py-3" 
+                    onclick="$('#mobileActionsModal').modal('hide'); showModal('user', '${id}')" ${disabledAttr}>
+                    <i class="fas fa-user-lock me-3 fa-lg"></i> <span class="fs-5">Gestión de Usuario</span>
+                </button>
+                <button class="btn btn-lg btn-success d-flex align-items-center justify-content-center py-3" 
+                    onclick="$('#mobileActionsModal').modal('hide'); showModal('pagos', '${id}')">
+                    <i class="fas fa-dollar-sign me-3 fa-lg"></i> <span class="fs-5">Gestión de Pagos</span>
+                </button>
+                <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
+                    onclick="$('#mobileActionsModal').modal('hide'); showModal('socios', '${id}')">
+                    <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Socio</span>
+                </button>
+                <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
+                    onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'socios', '${nombre}')">
+                    <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Socio</span>
+                </button>
+            `;
+            
+            mobileActionsModal.show();
         }
 
         let deleteInfo = {};
