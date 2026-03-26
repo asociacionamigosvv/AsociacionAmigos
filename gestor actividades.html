@@ -1783,16 +1783,18 @@
                 }
 
                 if (tipoLower === 'socios') {
-                    const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
+                    const nombreSocioBase = `${act.Apellido}, ${act.Nombre}`;
+                    const nombreSocioFormat = !esActivo ? `<span class="text-blink fw-bold">${nombreSocioBase}</span>` : nombreSocioBase;
+                    
                     const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
                     const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary';
 
                     // Comillas escapadas cuidadosamente para la función inline
-                    const nombreSocioSafe = nombreSocio.replace(/'/g, "\\'");
+                    const nombreSocioSafe = nombreSocioBase.replace(/'/g, "\\'");
 
                     row.innerHTML = `
                 <td style="display:none;">${act.id}</td> 
-                <td>${iconoActivo}${nombreSocio}</td>
+                <td>${iconoActivo} ${nombreSocioFormat}</td>
                 <td>${act.nro_dni}</td>
                 <td>${act.email}</td>
                 <td>${fechaFormateada}</td>
@@ -1837,9 +1839,9 @@
                 } else {
                     row.innerHTML = `
                         <td style="display:none;">${act.id}</td>
-                        <td>${formatToDisplayDate(act.fecha)}</td>
+                        <td>${iconoActivo} ${formatToDisplayDate(act.fecha)}</td>
                         <td>${act.hora}</td>
-                        <td>${iconoActivo}${act.titulo}</td>
+                        <td>${act.titulo}</td>
                         <td>${act.detalle}</td>
                         <td>${act.costo}</td>`;
 
@@ -1864,6 +1866,8 @@
             const warningEl = document.getElementById('mobileActionsStatusWarning');
             if (!esActivo) {
                 warningEl.style.display = 'block';
+                const leyenda = tipo === 'socios' ? 'SOCIO INACTIVO' : 'REGISTRO INACTIVO';
+                warningEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${leyenda}`;
             } else {
                 warningEl.style.display = 'none';
             }
