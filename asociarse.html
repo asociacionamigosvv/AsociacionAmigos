@@ -186,8 +186,9 @@
                 remitir el comprobante al email <b>asociacionamigosvv@gmail.com</b>
             </p>
 
-            <button id="btnAceptarPago" class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
- Aceptar
+            <button id="btnAceptarPago"
+                class="w-full bg-[var(--color-accent)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-[#27948a] transition uppercase tracking-wider">
+                Aceptar
             </button>
         </div>
     </div>
@@ -220,7 +221,8 @@
             </div>
             <h3 class="text-xl font-bold text-gray-800">Socio ya existente</h3>
             <p class="mt-4 text-gray-600 text-sm leading-relaxed mb-6">
-                Esta persona ya existe cargada en el sistema. Por favor, póngase en contacto a través de <b>asociacionamigosvv@gmail.com</b>
+                Esta persona ya existe cargada en el sistema. Por favor, póngase en contacto a través de
+                <b>asociacionamigosvv@gmail.com</b>
             </p>
             <button id="btnCerrarError"
                 class="w-full bg-[var(--color-primary)] text-white font-bold py-3.5 rounded-lg shadow-lg hover:bg-gray-700 transition uppercase tracking-wider">
@@ -240,7 +242,7 @@
         const loadingMsg = document.getElementById('loadingMsg');
         const btnSubmit = document.getElementById('btnSubmit');
 
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRoZoXjb3DDUoUSVPOvhs-chZgASBdMVTsWUYY-Ki_K6ohj5QLG0DFNoATxrSjnZcHBg/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzn29G4EHoO02R8-bo8sJ3qlQg8h5drL1s6UBXr-XklJdYTfjXTzHKf5Hv7xULDItGbTg/exec";
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -260,9 +262,9 @@
         });
 
         // Función global que llamará el Script de Google
-        window.procesarRespuesta = function(respuesta) {
+        window.procesarRespuesta = function (respuesta) {
             loadingMsg.classList.add('hidden');
-            
+
             if (respuesta.status === "existe") {
                 errorModal.classList.remove('hidden');
                 errorModal.classList.add('flex');
@@ -277,7 +279,7 @@
                 btnSubmit.disabled = false;
                 btnSubmit.classList.remove('opacity-50');
             }
-            
+
             // Limpieza del tag script
             const scripts = document.querySelectorAll('script[src*="callback=procesarRespuesta"]');
             scripts.forEach(s => s.remove());
