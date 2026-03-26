@@ -150,8 +150,8 @@
             </div>
 
             <div class="d-flex gap-3 align-items-center">
-                <div id="userBadge" class="bg-white/10 px-3 py-1.5 rounded-full border border-white/20 d-flex align-items-center gap-2">
-                    <i class="fas fa-user-circle text-white/80"></i>
+                <div id="userBadge" class="glass-badge">
+                    <i class="fas fa-user-circle text-white"></i>
                     <span id="userNameDisplay" class="text-white text-xs fw-bold tracking-wide uppercase">...</span>
                 </div>
                 <button onclick="logout()" class="btn btn-sm btn-outline-light rounded-pill px-3 border-white/30 hover:bg-white/10">
@@ -901,18 +901,14 @@
                 estadoActividadGroup.style.display = 'none';
 
                 if (id) {
-                    // Buscamos el socio en la tabla para los datos básicos
-                    const filaSocio = Array.from(document.querySelectorAll('#sociosTable tbody tr')).find(tr =>
-                        tr.cells[0].innerText === id.toString()
-                    );
-
-                    if (filaSocio) {
-                        const nombreCompleto = filaSocio.cells[1].innerText;
+                    // Usar caché para datos básicos del socio
+                    const registroSocio = actividadesCache.find(r => String(r.id) === String(id));
+                    
+                    if (registroSocio) {
+                        const nombreCompleto = `${registroSocio.Apellido || ''}, ${registroSocio.Nombre || ''}`;
                         document.getElementById('pagoSocio').value = nombreCompleto;
                         document.getElementById('pagoIdUser').value = id;
-                        document.getElementById('pagoFecha').value = new Date().toISOString().split('T')[0]; // Fecha hoy por defecto
-
-                        // DISPARAMOS EL HISTORIAL
+                        document.getElementById('pagoFecha').value = new Date().toISOString().split('T')[0];
                         renderHistorialPagos(id);
                     }
                 }
@@ -924,21 +920,16 @@
                 document.getElementById('saveActividadBtn').className = 'btn-premium bg-slate-700 text-white';
 
                 if (id) {
-                    const filaSocio = Array.from(document.querySelectorAll('#sociosTable tbody tr')).find(tr =>
-                        tr.cells[0].innerText === id.toString()
-                    );
+                    // Priorizar el caché para rellenar campos básicos de lectura inmediata
+                    const registroSocio = actividadesCache.find(r => String(r.id) === String(id));
 
-                    if (filaSocio) {
-                        const nombreCompleto = filaSocio.cells[1].innerText.split(',');
-                        const apellido = nombreCompleto[0].trim();
-                        const nombre = nombreCompleto[1] ? nombreCompleto[1].trim() : '';
-
-                        document.getElementById('Apellido').value = apellido;
-                        document.getElementById('Nombre').value = nombre;
+                    if (registroSocio) {
+                        document.getElementById('Apellido').value = registroSocio.Apellido || '';
+                        document.getElementById('Nombre').value = registroSocio.Nombre || '';
                         document.getElementById('Apellido').readOnly = true;
                         document.getElementById('Nombre').readOnly = true;
-                        document.getElementById('Apellido').style.backgroundColor = "#e9ecef";
-                        document.getElementById('Nombre').style.backgroundColor = "#e9ecef";
+                        document.getElementById('Apellido').style.backgroundColor = "#f1f5f9";
+                        document.getElementById('Nombre').style.backgroundColor = "#f1f5f9";
                     }
 
                     setLoadingState(true, 'Verificando usuario...');
@@ -1537,15 +1528,16 @@
             
             if (tipo === 'socios') {
                 buttonsHtml = `
-                    <button class="${btnClass} bg-yellow-400 text-white" onclick="hideActionsAndShow('user', '${id}')" ${!esActivo ? 'disabled' : ''}>
+                    <button class="${btnClass} ${esActivo ? 'bg-yellow-400' : 'bg-slate-100'} ${esActivo ? 'text-white' : 'text-slate-400'}" 
+                            onclick="hideActionsAndShow('user', '${id}')" ${!esActivo ? 'disabled' : ''}>
                         <div class="d-flex align-items-center gap-3">
-                            <i class="fas fa-user-shield text-white"></i>
+                            <i class="fas fa-user-shield ${esActivo ? 'text-white' : 'text-slate-300'}"></i>
                             <div class="text-start">
                                 <div class="fw-bold fs-6">Credenciales de Acceso</div>
-                                <div class="text-xs opacity-90">Gestionar login y contraseña</div>
+                                <div class="text-xs ${esActivo ? 'opacity-90' : 'opacity-60'}">Gestionar login y contraseña</div>
                             </div>
                         </div>
-                        <i class="fas fa-chevron-right opacity-50"></i>
+                        <i class="fas fa-chevron-right ${esActivo ? 'opacity-50' : 'opacity-20'}"></i>
                     </button>
                     <button class="${btnClass} btn-accent-p" onclick="hideActionsAndShow('pagos', '${id}')">
                         <div class="d-flex align-items-center gap-3">
@@ -1601,19 +1593,18 @@
             }
 
             container.innerHTML = buttonsHtml;
-            const modal = new bootstrap.Modal(document.getElementById('mobileActionsModal'));
-            modal.show();
+            mobileActionsModal.show();
         }
 
         // Helpers para navegación fluida
         function hideActionsAndShow(tipo, id) {
-            bootstrap.Modal.getInstance(document.getElementById('mobileActionsModal')).hide();
-            setTimeout(() => showModal(tipo, id), 300);
+            mobileActionsModal.hide();
+            setTimeout(() => showModal(tipo, id), 350);
         }
 
         function hideActionsAndDelete(id, tipo, nombre) {
-            bootstrap.Modal.getInstance(document.getElementById('mobileActionsModal')).hide();
-            setTimeout(() => confirmDelete(id, tipo, nombre), 300);
+            mobileActionsModal.hide();
+            setTimeout(() => confirmDelete(id, tipo, nombre), 350);
         }
 
         let deleteInfo = {};

@@ -187,6 +187,8 @@ body {
 .bg-slate-800 { background-color: #1e293b !important; }
 .bg-slate-100 { background-color: #f1f5f9 !important; }
 .text-slate-800 { color: #1e293b !important; }
+.text-slate-400 { color: #94a3b8 !important; }
+.text-slate-300 { color: #cbd5e1 !important; }
 .text-white { color: #ffffff !important; }
 .text-red-600 { color: #dc2626 !important; }
 .text-teal-400 { color: #2dd4bf !important; }
@@ -213,3 +215,15 @@ body {
 .bg-slate-200 { background-color: #e2e8f0 !important; }
 .bg-emerald-600 { background-color: #059669 !important; }
 .bg-yellow-400 { background-color: #facc15 !important; }
+
+.glass-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(4px);
+    border: none !important;
+}
