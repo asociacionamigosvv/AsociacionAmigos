@@ -154,6 +154,31 @@
             .nav-tabs .nav-link {
                 padding: 0.75rem 0.5rem;
             }
+
+            /* Mejora para visualización de tarjetas */
+            thead {
+                display: none !important;
+            }
+
+            .table, .table tbody, .table tr, .table td {
+                display: block !important;
+                width: 100% !important;
+                border: none !important;
+            }
+
+            .mobile-card {
+                background: white !important;
+                border-radius: 1.25rem !important;
+                margin-bottom: 1.25rem !important;
+                padding: 1.25rem !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+                border: 1px solid rgba(0, 0, 0, 0.03) !important;
+                position: relative;
+            }
+
+            .table td {
+                padding: 0 !important;
+            }
         }
     </style>
 </head>
@@ -1460,7 +1485,7 @@
 
             actividades.forEach(act => {
                 const row = tableBody.insertRow();
-                row.className = 'align-middle cursor-pointer';
+                row.className = 'align-middle cursor-pointer mobile-card';
 
                 // Detección robusta de estado activo
                 const rawActivo = (act.activo || act.ACTIVO || act.Estado || "SI").toString().toUpperCase();

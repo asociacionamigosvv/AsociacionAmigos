@@ -227,3 +227,36 @@ body {
     backdrop-filter: blur(4px);
     border: none !important;
 }
+
+@keyframes spin-logo {
+    0% { transform: rotate(0deg); filter: drop-shadow(0 0 5px rgba(255,255,255,0.4)); }
+    50% { filter: drop-shadow(0 0 15px rgba(255,255,255,1)); }
+    100% { transform: rotate(360deg); filter: drop-shadow(0 0 5px rgba(255,255,255,0.4)); }
+}
+
+.loader-logo-spin {
+    width: 90px;
+    height: 90px;
+    animation: spin-logo 3.2s infinite linear;
+    display: block !important;
+}
+
+.loading-text {
+    display: block !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    margin-top: 1.5rem !important;
+}
+
+.loading-overlay .d-flex {
+    flex-direction: column !important;
+}
+
+@media (max-width: 768px) {
+    thead { display: none !important; }
+    .table { border: none !important; }
+    .table td { border: none !important; padding: 0.5rem 0 !important; }
+}
