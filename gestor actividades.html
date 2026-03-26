@@ -179,6 +179,10 @@
             .table td {
                 padding: 0 !important;
             }
+
+            .hide-on-mobile {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -1498,8 +1502,11 @@
                 if (!esActivo) row.classList.add('opacity-75');
 
                 if (tipoLower === 'socios') {
-                    const nombreSocioBase = `${act.Apellido}, ${act.Nombre}`;
+                    const apellido = act.Apellido || act.apellido || '';
+                    const nombre = act.Nombre || act.nombre || '';
+                    const nombreSocioBase = `${apellido}, ${nombre}`;
                     const nombreSocioSafe = nombreSocioBase.replace(/'/g, "\\'");
+                    const dni = act.nro_dni || act.dni || '-';
 
                     row.innerHTML = `
                         <td style="display:none;">${act.id}</td> 
@@ -1508,15 +1515,15 @@
                                 ${iconoActivo}
                                 <div>
                                     <div class="fw-bold text-[var(--primary)]">${nombreSocioBase}</div>
-                                    <div class="text-[var(--text-muted)] x-small d-md-none">DNI: ${act.nro_dni}</div>
+                                    <div class="text-[var(--text-muted)] text-xs d-md-none">DNI: ${dni}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="hide-on-mobile">${act.nro_dni}</td>
-                        <td class="hide-on-mobile">${act.email}</td>
+                        <td class="hide-on-mobile">${dni}</td>
+                        <td class="hide-on-mobile">${act.email || '-'}</td>
                         <td class="hide-on-mobile">${formatToDisplayDate(act.f_cumple)}</td>
-                        <td class="hide-on-mobile">${act.tel_cel}</td>
-                        <td class="hide-on-mobile">${act.lugar_residencia}</td>
+                        <td class="hide-on-mobile">${act.tel_cel || '-'}</td>
+                        <td class="hide-on-mobile">${act.lugar_residencia || '-'}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm border" onclick="event.stopPropagation(); showActionsModal('${act.id}', '${nombreSocioSafe}', 'socios', ${esActivo})">
                                 <i class="fas fa-ellipsis-v"></i>
