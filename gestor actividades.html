@@ -445,10 +445,19 @@
             }
 
             @keyframes fade-blink {
-                0% { opacity: 1; }
-                50% { opacity: 0; }
-                100% { opacity: 1; }
+                0% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0;
+                }
+
+                100% {
+                    opacity: 1;
+                }
             }
+
             .text-blink {
                 animation: fade-blink 1.5s infinite;
             }
@@ -770,12 +779,14 @@
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header bg-dark text-white text-center">
                         <h5 class="modal-title w-100 fs-4">Acciones</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body bg-light text-center py-4">
                         <h4 id="mobileActionsSocioName" class="mb-2 text-primary fw-bold"></h4>
-                        <div id="mobileActionsStatusWarning" class="text-danger fw-bold text-blink mb-3" style="display: none;">
-                            <i class="fas fa-exclamation-triangle"></i> REGISTRO INACTIVO
+                        <div id="mobileActionsStatusWarning" class="text-danger fw-bold text-blink mb-3"
+                            style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i> SOCIO INACTIVO
                         </div>
                         <div id="mobileActionsContainer" class="d-flex flex-column gap-3 px-3">
                             <!-- Los botones se inyectan dinámicamente según el tipo -->
@@ -852,7 +863,7 @@
             fetchActividades().then(() => {
                 // Chequear notificaciones en segundo plano tras cargar la tabla sin bloquear
                 setTimeout(() => {
-                    checkTodayActivities(); 
+                    checkTodayActivities();
                     checkNewMembersToday();
                 }, 1000);
             });
@@ -924,13 +935,13 @@
                     return nombreA.localeCompare(nombreB);
                 }
 
-                // --- LOGICA PARA PROGRAMACIÓN (Mantiene tu orden original) ---
+                // --- LOGICA PARA PROGRAMACIÓN (Ascendente: Más viejo a más nuevo) ---
                 if (tipo === 'Programacion' && a.fecha && b.fecha) {
                     if (a.fecha !== b.fecha) {
-                        return b.fecha.localeCompare(a.fecha);
+                        return a.fecha.localeCompare(b.fecha);
                     }
                     if (a.hora && b.hora) {
-                        return b.hora.localeCompare(a.hora);
+                        return a.hora.localeCompare(b.hora);
                     }
                     return 0;
                 }
@@ -1343,9 +1354,26 @@
                 setLoadingState(false);
 
                 if (data.status === 'success') {
-                    actividadesCache = data.actividades;
-                    // Ordenar antes de renderizar (Más reciente a más antiguo)
-                    const actividadesOrdenadas = sortActividades(data.actividades, activeTab);
+                    let acts = data.actividades;
+
+                    // Ocultar programaciones cuya fecha ya pasó (anteriores a hoy)
+                    if (activeTab === 'Programacion') {
+                        const today = new Date();
+                        const year = today.getFullYear();
+                        const month = String(today.getMonth() + 1).padStart(2, '0');
+                        const day = String(today.getDate()).padStart(2, '0');
+                        const todayStr = `${year}-${month}-${day}`;
+
+                        acts = acts.filter(act => {
+                            if (!act.fecha) return true;
+                            const actDateStr = act.fecha.split('T')[0];
+                            return actDateStr >= todayStr;
+                        });
+                    }
+
+                    actividadesCache = acts;
+                    // Ordenar antes de renderizar (Más antiguo a más nuevo para Programación)
+                    const actividadesOrdenadas = sortActividades(acts, activeTab);
                     renderTable(actividadesOrdenadas, activeTab);
                 } else {
                     showFeedback(`Error al cargar ${activeTab}: ${data.message}`, false);
@@ -1743,17 +1771,17 @@
 
             actividades.forEach(act => {
                 const row = tableBody.insertRow();
-                
+
                 const esActivo = act.activo === 'SI';
-                const iconoActivo = esActivo 
-                    ? `<i class="fas fa-circle text-success me-2" title="Activo" style="font-size: 0.7em;"></i>` 
+                const iconoActivo = esActivo
+                    ? `<i class="fas fa-circle text-success me-2" title="Activo" style="font-size: 0.7em;"></i>`
                     : `<i class="fas fa-circle text-danger me-2" title="Inactivo" style="font-size: 0.7em;"></i>`;
 
                 if (tipoLower === 'socios') {
                     const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
                     const fechaFormateada = act.f_cumple ? formatToDisplayDate(act.f_cumple) : '';
                     const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary';
-                    
+
                     // Comillas escapadas cuidadosamente para la función inline
                     const nombreSocioSafe = nombreSocio.replace(/'/g, "\\'");
 
@@ -1769,7 +1797,7 @@
                     // Al hacer click en cualquier parte de la fila que dispare el modal de acciones
                     row.classList.add('row-click-action');
                     row.style.cursor = 'pointer';
-                    row.onclick = function() {
+                    row.onclick = function () {
                         showActionsModal(act.id, nombreSocioSafe, 'socios', esActivo);
                     };
 
@@ -1783,7 +1811,7 @@
                     const nombreSafe = act.nombre ? act.nombre.replace(/'/g, "\\'") : 'Muestra';
                     row.classList.add('row-click-action');
                     row.style.cursor = 'pointer';
-                    row.onclick = function() {
+                    row.onclick = function () {
                         showActionsModal(act.id, nombreSafe, 'muestra');
                     };
 
@@ -1794,10 +1822,10 @@
                         <td>${act.Nombre}</td>
                         <td>${act.Usuario}</td>
                         <td>${act.Permiso}</td>`;
-                        
+
                     row.classList.add('row-click-action');
                     row.style.cursor = 'pointer';
-                    row.onclick = function() {
+                    row.onclick = function () {
                         showActionsModal(act.id, act.Usuario, 'user');
                     };
 
@@ -1809,11 +1837,11 @@
                         <td>${iconoActivo}${act.titulo}</td>
                         <td>${act.detalle}</td>
                         <td>${act.costo}</td>`;
-                        
+
                     const tituloSafe = act.titulo ? act.titulo.replace(/'/g, "\\'") : 'Programación';
                     row.classList.add('row-click-action');
                     row.style.cursor = 'pointer';
-                    row.onclick = function() {
+                    row.onclick = function () {
                         showActionsModal(act.id, tituloSafe, 'programacion');
                     };
                 }
@@ -1827,16 +1855,16 @@
          */
         function showActionsModal(id, nombre, tipo, esActivo = true) {
             document.getElementById('mobileActionsSocioName').textContent = nombre;
-            
+
             const warningEl = document.getElementById('mobileActionsStatusWarning');
             if (!esActivo) {
                 warningEl.style.display = 'block';
             } else {
                 warningEl.style.display = 'none';
             }
-            
+
             const container = document.getElementById('mobileActionsContainer');
-            
+
             if (tipo === 'socios') {
                 const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary text-white';
                 const disabledAttr = esActivo ? '' : 'disabled';
@@ -1892,7 +1920,7 @@
                     </button>
                 `;
             }
-            
+
             mobileActionsModal.show();
         }
 
