@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo AAVV.png" type="image/png">
     <title>Villa Victoria | Gestor Administrativo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous" />
     <link rel="stylesheet" href="theme.css">
 
     <style>
@@ -26,7 +30,7 @@
             background: linear-gradient(to right, var(--primary), var(--primary-light));
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .header-logo-mini {
@@ -41,14 +45,14 @@
             text-align: center;
             border-radius: 2rem;
             margin-bottom: 2rem;
-            box-shadow: inset 0 -4px 12px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: inset 0 -4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .header-logo {
             max-width: 140px;
             margin-bottom: 1.5rem;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
         }
 
         .main-container {
@@ -131,14 +135,29 @@
         }
 
         @media (max-width: 768px) {
-            .fab-container { display: block; }
-            .header-info-desktop { display: none; }
-            .main-container { padding: 1rem; }
-            .nav-tabs { font-size: 0.85rem; }
-            .nav-tabs .nav-link { padding: 0.75rem 0.5rem; }
+            .fab-container {
+                display: block;
+            }
+
+            .header-info-desktop {
+                display: none;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .nav-tabs {
+                font-size: 0.85rem;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.75rem 0.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <header class="main-header p-3 sticky-top">
         <div class="container-fluid d-flex justify-content-between align-items-center">
@@ -154,18 +173,17 @@
                     <i class="fas fa-user-circle text-white"></i>
                     <span id="userNameDisplay" class="text-white text-xs fw-bold tracking-wide uppercase">...</span>
                 </div>
-                <button onclick="logout()" class="btn btn-sm btn-outline-light rounded-pill px-3 border-white/30 hover:bg-white/10">
-                   <i class="fas fa-sign-out-alt"></i>
+                <button onclick="logout()"
+                    class="btn btn-sm btn-outline-light rounded-pill px-3 border-white/30 hover:bg-white/10">
+                    <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
         </div>
     </header>
 
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="d-flex align-items-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
+        <div class="d-flex flex-column align-items-center">
+            <img src="logo AAVV.png" class="loader-logo-spin" alt="Cargando...">
             <span class="loading-text" id="loadingText">Cargando datos...</span>
         </div>
     </div>
@@ -178,17 +196,20 @@
                 <img src="logo AAVV.png" alt="Logo Villa Victoria" class="header-logo mx-auto">
                 <h1 class="text-4xl font-black text-[var(--primary)] tracking-tight mb-2">Gestor de Información</h1>
                 <p class="text-[var(--text-muted)] font-medium max-w-2xl mx-auto">
-                    Panel administrativo para la gestión de contenidos culturales y membresías de la Asociación Amigos Villa Victoria.
+                    Panel administrativo para la gestión de contenidos culturales y membresías de la Asociación Amigos
+                    Villa Victoria.
                 </p>
             </div>
 
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-4">
                 <div>
                     <h2 class="h3 font-black text-[var(--primary)] mb-0">Contenidos del Sitio</h2>
-                    <p class="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Listado Maestro de Actividades</p>
+                    <p class="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Listado Maestro
+                        de Actividades</p>
                 </div>
 
-                <div class="d-flex flex-wrap gap-3 align-items-center w-100 w-md-auto justify-content-center justify-content-md-end">
+                <div
+                    class="d-flex flex-wrap gap-3 align-items-center w-100 w-md-auto justify-content-center justify-content-md-end">
                     <div id="searchContainer" class="search-wrapper-premium" style="display: none;">
                         <i class="fas fa-search"></i>
                         <input type="text" id="searchInput" class="input-premium search-input-premium"
@@ -293,23 +314,30 @@
 
             </div>
         </div>
-        
+
         <!-- Floating Action Button (Móvil) -->
         <div class="fab-container">
-            <button class="btn btn-accent-p rounded-circle shadow-lg" style="width: 60px; height: 60px; font-size: 24px;" onclick="document.getElementById('btnNueva'+activeTab.charAt(0).toUpperCase() + activeTab.slice(1)).click()">
+            <button class="btn btn-accent-p rounded-circle shadow-lg"
+                style="width: 60px; height: 60px; font-size: 24px;"
+                onclick="document.getElementById('btnNueva'+activeTab.charAt(0).toUpperCase() + activeTab.slice(1)).click()">
                 <i class="fas fa-plus"></i>
             </button>
         </div>
 
 
         <!-- MODAL: GESTIÓN DE ELEMENTOS (Muestras, Programación, Socios) -->
-        <div class="modal fade" id="actividadModal" tabindex="-1" aria-labelledby="actividadModalLabel" aria-hidden="true">
+        <div class="modal fade" id="actividadModal" tabindex="-1" aria-labelledby="actividadModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
-                    <div class="modal-header border-0 p-4 pb-0" style="background: white; border-radius: 1.5rem 1.5rem 0 0;">
+                    <div class="modal-header border-0 p-4 pb-0"
+                        style="background: white; border-radius: 1.5rem 1.5rem 0 0;">
                         <div class="d-flex flex-column">
-                            <h5 class="modal-title font-black text-[var(--primary)] text-2xl tracking-tight" id="actividadModalLabel">Editar Registro</h5>
-                            <span class="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Completa todos los campos requeridos</span>
+                            <h5 class="modal-title font-black text-[var(--primary)] text-2xl tracking-tight"
+                                id="actividadModalLabel">Editar Registro</h5>
+                            <span
+                                class="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">Completa
+                                todos los campos requeridos</span>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -321,21 +349,28 @@
                             <div id="formContent"></div>
 
                             <div class="bg-slate-50 p-3 rounded-3 mt-4" id="estadoActividadContainer">
-                                <label class="form-label font-bold text-xs uppercase tracking-wider text-[var(--text-muted)]">Visibilidad / Estado</label>
+                                <label
+                                    class="form-label font-bold text-xs uppercase tracking-wider text-[var(--text-muted)]">Visibilidad
+                                    / Estado</label>
                                 <div class="d-flex gap-4">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="activo" id="activoSI" value="true" required>
-                                        <label class="form-check-label fw-bold text-emerald-500" for="activoSI">Activo (Muestra en sitio)</label>
+                                        <input class="form-check-input" type="radio" name="activo" id="activoSI"
+                                            value="true" required>
+                                        <label class="form-check-label fw-bold text-emerald-500" for="activoSI">Activo
+                                            (Muestra en sitio)</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="activo" id="activoNO" value="false" required>
-                                        <label class="form-check-label fw-bold text-red-500" for="activoNO">Inactivo (Ocultar)</label>
+                                        <input class="form-check-input" type="radio" name="activo" id="activoNO"
+                                            value="false" required>
+                                        <label class="form-check-label fw-bold text-red-500" for="activoNO">Inactivo
+                                            (Ocultar)</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer border-0 p-4 pt-0">
-                            <button type="button" class="btn-premium bg-slate-100 text-slate-800" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn-premium bg-slate-100 text-slate-800"
+                                data-bs-dismiss="modal">Cancelar</button>
                             <button type="button" class="btn-premium btn-accent-p" id="saveActividadBtn">
                                 <i class="fas fa-save me-2"></i> Guardar Cambios
                             </button>
@@ -350,14 +385,18 @@
             <div class="modal-dialog modal-sm modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
                     <div class="modal-body text-center p-5">
-                        <div class="text-red-500 mb-4" style="font-size: 4rem;"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="text-red-500 mb-4" style="font-size: 4rem;"><i
+                                class="fas fa-exclamation-circle"></i></div>
                         <h4 class="font-black text-[var(--primary)] mb-2">¿Confirmar?</h4>
-                        <p class="text-[var(--text-muted)] font-medium mb-0" id="confirmDeleteMessage">¿Deseas eliminar este registro?</p>
+                        <p class="text-[var(--text-muted)] font-medium mb-0" id="confirmDeleteMessage">¿Deseas eliminar
+                            este registro?</p>
                         <p class="text-xs text-red-400 font-bold uppercase mt-2">Esta acción no se puede deshacer</p>
                     </div>
                     <div class="modal-footer border-0 flex-nowrap p-4 pt-0 gap-3">
-                        <button type="button" class="btn-premium bg-slate-100 w-100" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" id="btnDoDelete" class="btn-premium bg-red-600 text-white w-100">Eliminar</button>
+                        <button type="button" class="btn-premium bg-slate-100 w-100"
+                            data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btnDoDelete"
+                            class="btn-premium bg-red-600 text-white w-100">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -369,13 +408,14 @@
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
                     <div class="modal-header border-0 p-4 bg-yellow-400" style="border-radius: 1.5rem 1.5rem 0 0;">
                         <h5 class="modal-title font-black d-flex align-items-center gap-2">
-                             <i class="fas fa-calendar-check mt-1"></i> Agenda para Hoy
+                            <i class="fas fa-calendar-check mt-1"></i> Agenda para Hoy
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-4">
                         <p class="text-[var(--text-muted)] font-medium mb-4">
-                            Eventos programados para hoy, <strong id="todayDateDisplay" class="text-[var(--primary)]"></strong>:
+                            Eventos programados para hoy, <strong id="todayDateDisplay"
+                                class="text-[var(--primary)]"></strong>:
                         </p>
                         <ul id="actividadesHoyList" class="list-group list-group-flush gap-2"></ul>
                     </div>
@@ -393,15 +433,18 @@
         <div class="modal fade" id="nuevosSociosHoyModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
-                    <div class="modal-header border-0 p-4 bg-emerald-500 text-white" style="border-radius: 1.5rem 1.5rem 0 0;">
+                    <div class="modal-header border-0 p-4 bg-emerald-500 text-white"
+                        style="border-radius: 1.5rem 1.5rem 0 0;">
                         <h5 class="modal-title font-black d-flex align-items-center gap-2">
                             <i class="fas fa-user-plus mt-1"></i> ¡Nuevas Altas!
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body p-4">
                         <p class="text-[var(--text-muted)] font-medium mb-4">
-                            Nuevas membresías registradas hoy, <strong id="nuevosSociosFechaDisplay" class="text-[var(--primary)]"></strong>:
+                            Nuevas membresías registradas hoy, <strong id="nuevosSociosFechaDisplay"
+                                class="text-[var(--primary)]"></strong>:
                         </p>
                         <ul id="nuevosSociosHoyList" class="list-group list-group-flush gap-2"></ul>
                     </div>
@@ -420,14 +463,15 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg" style="border-radius: 2rem;">
                     <div class="modal-header border-0 p-4 pb-0 justify-content-center">
-                         <div class="bg-slate-200" style="width: 40px; height: 5px; border-radius: 5px; margin-bottom: 1rem;"></div>
+                        <div class="bg-slate-200"
+                            style="width: 40px; height: 5px; border-radius: 5px; margin-bottom: 1rem;"></div>
                     </div>
                     <div class="modal-body p-4 pt-0">
                         <div class="text-center mb-4">
                             <h4 id="mobileActionsSocioName" class="font-black text-[var(--primary)] mb-1"></h4>
                             <div id="mobileActionsStatusWarning" style="display: none;"></div>
                         </div>
-                        
+
                         <div id="mobileActionsContainer" class="d-flex flex-column">
                             <!-- Inyección dinámica premium -->
                         </div>
@@ -903,7 +947,7 @@
                 if (id) {
                     // Usar caché para datos básicos del socio
                     const registroSocio = actividadesCache.find(r => String(r.id) === String(id));
-                    
+
                     if (registroSocio) {
                         const nombreCompleto = `${registroSocio.Apellido || ''}, ${registroSocio.Nombre || ''}`;
                         document.getElementById('pagoSocio').value = nombreCompleto;
@@ -1421,7 +1465,7 @@
                 // Detección robusta de estado activo
                 const rawActivo = (act.activo || act.ACTIVO || act.Estado || "SI").toString().toUpperCase();
                 const esActivo = rawActivo === 'SI' || rawActivo === 'TRUE';
-                
+
                 const iconoActivo = esActivo
                     ? `<i class="fas fa-check-circle text-emerald-500 me-2" style="font-size: 1.1rem;"></i>`
                     : `<i class="fas fa-times-circle text-red-500 me-2" style="font-size: 1.1rem;"></i>`;
@@ -1431,7 +1475,7 @@
                 if (tipoLower === 'socios') {
                     const nombreSocioBase = `${act.Apellido}, ${act.Nombre}`;
                     const nombreSocioSafe = nombreSocioBase.replace(/'/g, "\\'");
-                    
+
                     row.innerHTML = `
                         <td style="display:none;">${act.id}</td> 
                         <td>
@@ -1453,7 +1497,7 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                         </td>`;
-                    
+
                     row.onclick = () => showActionsModal(act.id, nombreSocioSafe, 'socios', esActivo);
 
                 } else if (tipoLower === 'muestra') {
@@ -1514,7 +1558,7 @@
         function showActionsModal(id, nombre, tipo, esActivo = true) {
             const container = document.getElementById('mobileActionsContainer');
             document.getElementById('mobileActionsSocioName').textContent = nombre;
-            
+
             const warningEl = document.getElementById('mobileActionsStatusWarning');
             if (!esActivo) {
                 warningEl.innerHTML = `<div class="alert alert-danger py-2 mb-3 text-xs fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>ESTADO: INACTIVO</div>`;
@@ -1525,7 +1569,7 @@
 
             let buttonsHtml = '';
             const btnClass = "btn-premium w-100 d-flex align-items-center justify-content-between px-4 py-3 mb-3 border-0";
-            
+
             if (tipo === 'socios') {
                 buttonsHtml = `
                     <button class="${btnClass} ${esActivo ? 'bg-yellow-400' : 'bg-slate-100'} ${esActivo ? 'text-white' : 'text-slate-400'}" 
