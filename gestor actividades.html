@@ -1774,8 +1774,13 @@
 
                 const esActivo = act.activo === 'SI';
                 const iconoActivo = esActivo
-                    ? `<i class="fas fa-circle text-success me-2" title="Activo" style="font-size: 0.7em;"></i>`
-                    : `<i class="fas fa-circle text-danger me-2" title="Inactivo" style="font-size: 0.7em;"></i>`;
+                    ? `<i class="fas fa-check-circle text-success me-2" title="Activo" style="font-size: 1.1em;"></i>`
+                    : `<i class="fas fa-times-circle text-danger me-2" title="Inactivo" style="font-size: 1.1em;"></i>`;
+
+                // Si está inactivo, ponemos el texto del renglón completo en rojo
+                if (!esActivo) {
+                    row.classList.add('text-danger');
+                }
 
                 if (tipoLower === 'socios') {
                     const nombreSocio = `${act.Apellido}, ${act.Nombre}`;
