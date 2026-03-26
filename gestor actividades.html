@@ -575,7 +575,7 @@
                                     <th scope="col" style="width: 20%;">Período</th>
                                     <th scope="col" style="width: 35%;">Detalle</th>
                                     <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -596,7 +596,7 @@
                                     <th scope="col" style="width: 23%;">Detalle</th>
                                     <th scope="col" style="width: 15%;">Costo</th>
                                     <th scope="col" style="width: 10%; text-align: center;">Activo</th>
-                                    <th scope="col" style="width: 15%; text-align: center;">Acciones</th>
+                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1778,9 +1778,8 @@
                     // Al hacer click en cualquier parte de la fila en móvil que dispare el modal de acciones
                     row.classList.add('mobile-actions-trigger');
                     row.onclick = function() {
-                        // Solo abrir en modo móvil (menos de 768px). Usamos innerWidth en javascript.
                         if (window.innerWidth <= 768) {
-                            showMobileActions(act.id, nombreSocioSafe, esActivo);
+                            showMobileActions(act.id, nombreSocioSafe, 'socios', esActivo);
                         }
                     };
 
@@ -1791,10 +1790,20 @@
                         <td>${act.periodo}</td>
                         <td>${act.detalle}</td>
                         <td class="text-center">${badgeActivo}</td>
-                        <td class="action-btns-cell"> <div class="action-btns"> <button class="btn btn-sm btn-primary" onclick="showModal('Muestra','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Muestra', '${act.nombre}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center td-acciones-desktop">
+                            <div class="action-btns action-btns-desktop">
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('Muestra','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'Muestra', '${act.nombre}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>`;
+
+                    const nombreSafe = act.nombre ? act.nombre.replace(/'/g, "\\'") : 'Muestra';
+                    row.classList.add('mobile-actions-trigger');
+                    row.onclick = function() {
+                        if (window.innerWidth <= 768) {
+                            showMobileActions(act.id, nombreSafe, 'muestra');
+                        }
+                    };
 
                 } else if (tipoLower === 'user') {
                     row.innerHTML = `
@@ -1803,10 +1812,10 @@
                         <td>${act.Nombre}</td>
                         <td>${act.Usuario}</td>
                         <td>${act.Permiso}</td>
-                        <td class="text-center">
-                            <div class="action-btns">
-                                <button class="btn btn-sm btn-primary" onclick="showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center td-acciones-desktop">
+                            <div class="action-btns action-btns-desktop">
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>`;
 
@@ -1819,12 +1828,20 @@
                         <td>${act.detalle}</td>
                         <td>${act.costo}</td>
                         <td class="text-center">${badgeActivo}</td>
-                        <td class="action-btns-cell">
-                            <div class="action-btns">
-                                <button class="btn btn-sm btn-primary" onclick="showModal('Programacion','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('${act.id}', 'Programacion', '${act.titulo}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                        <td class="text-center td-acciones-desktop">
+                            <div class="action-btns action-btns-desktop">
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('Programacion','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'Programacion', '${act.titulo}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>`;
+                        
+                    const tituloSafe = act.titulo ? act.titulo.replace(/'/g, "\\'") : 'Programación';
+                    row.classList.add('mobile-actions-trigger');
+                    row.onclick = function() {
+                        if (window.innerWidth <= 768) {
+                            showMobileActions(act.id, tituloSafe, 'programacion');
+                        }
+                    };
                 }
             });
 
@@ -1834,31 +1851,54 @@
          * Nueva función que abre un Modal grande con botones de acción grandes
          * SOLAMENTE en la vista de Móvil
          */
-        function showMobileActions(id, nombre, esActivo) {
+        function showMobileActions(id, nombre, tipo, esActivo = true) {
             document.getElementById('mobileActionsSocioName').textContent = nombre;
-            
-            const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary text-white';
-            const disabledAttr = esActivo ? '' : 'disabled';
-            
             const container = document.getElementById('mobileActionsContainer');
-            container.innerHTML = `
-                <button class="btn btn-lg ${claseBotonUser} d-flex align-items-center justify-content-center py-3" 
-                    onclick="$('#mobileActionsModal').modal('hide'); showModal('user', '${id}')" ${disabledAttr}>
-                    <i class="fas fa-user-lock me-3 fa-lg"></i> <span class="fs-5">Gestión de Usuario</span>
-                </button>
-                <button class="btn btn-lg btn-success d-flex align-items-center justify-content-center py-3" 
-                    onclick="$('#mobileActionsModal').modal('hide'); showModal('pagos', '${id}')">
-                    <i class="fas fa-dollar-sign me-3 fa-lg"></i> <span class="fs-5">Gestión de Pagos</span>
-                </button>
-                <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
-                    onclick="$('#mobileActionsModal').modal('hide'); showModal('socios', '${id}')">
-                    <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Socio</span>
-                </button>
-                <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
-                    onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'socios', '${nombre}')">
-                    <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Socio</span>
-                </button>
-            `;
+            
+            if (tipo === 'socios') {
+                const claseBotonUser = esActivo ? 'btn-warning' : 'btn-secondary text-white';
+                const disabledAttr = esActivo ? '' : 'disabled';
+                container.innerHTML = `
+                    <button class="btn btn-lg ${claseBotonUser} d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('user', '${id}')" ${disabledAttr}>
+                        <i class="fas fa-user-lock me-3 fa-lg"></i> <span class="fs-5">Gestión de Usuario</span>
+                    </button>
+                    <button class="btn btn-lg btn-success d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('pagos', '${id}')">
+                        <i class="fas fa-dollar-sign me-3 fa-lg"></i> <span class="fs-5">Gestión de Pagos</span>
+                    </button>
+                    <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('socios', '${id}')">
+                        <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Socio</span>
+                    </button>
+                    <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'socios', '${nombre}')">
+                        <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Socio</span>
+                    </button>
+                `;
+            } else if (tipo === 'muestra') {
+                container.innerHTML = `
+                    <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('Muestra', '${id}')">
+                        <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Muestra</span>
+                    </button>
+                    <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'Muestra', '${nombre}')">
+                        <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Muestra</span>
+                    </button>
+                `;
+            } else if (tipo === 'programacion') {
+                container.innerHTML = `
+                    <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('Programacion', '${id}')">
+                        <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Programación</span>
+                    </button>
+                    <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'Programacion', '${nombre}')">
+                        <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Programación</span>
+                    </button>
+                `;
+            }
             
             mobileActionsModal.show();
         }
