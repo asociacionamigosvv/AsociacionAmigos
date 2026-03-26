@@ -1515,7 +1515,9 @@
                                 ${iconoActivo}
                                 <div>
                                     <div class="fw-bold text-[var(--primary)]">${nombreSocioBase}</div>
-                                    <div class="text-[var(--text-muted)] text-xs d-md-none">DNI: ${dni}</div>
+                                    <div class="text-xs text-slate-500 d-md-none mt-1">
+                                        <i class="fas fa-id-card me-1"></i> DNI: ${dni}
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -1539,11 +1541,16 @@
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 ${iconoActivo}
-                                <span class="fw-bold">${act.nombre}</span>
+                                <div>
+                                    <div class="fw-bold">${act.nombre || 'Sin Nombre'}</div>
+                                    <div class="text-xs text-slate-500 d-md-none mt-1">
+                                        <i class="fas fa-clock me-1"></i> Periodo: ${act.periodo || 'Permanente'}
+                                    </div>
+                                </div>
                             </div>
                         </td>
-                        <td><span class="badge bg-light text-[var(--text-muted)] border">${act.periodo}</span></td>
-                        <td class="hide-on-mobile text-truncate" style="max-width: 300px;">${act.detalle}</td>
+                        <td class="hide-on-mobile"><span class="badge bg-light text-[var(--text-muted)] border">${act.periodo || 'Permanente'}</span></td>
+                        <td class="hide-on-mobile text-truncate" style="max-width: 300px;">${act.detalle || '-'}</td>
                         <td class="text-center">
                              <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm border" onclick="event.stopPropagation(); showActionsModal('${act.id}', '${nombreSafe}', 'muestra')">
                                 <i class="fas fa-ellipsis-v"></i>
