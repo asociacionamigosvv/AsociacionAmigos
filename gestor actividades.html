@@ -422,24 +422,7 @@
                 max-width: 98vw;
             }
 
-            /* Botones de acción más pequeños en móvil */
-            .action-btns-desktop {
-                display: none !important; /* Ocultamos los botones regulares en móvil */
-            }
-
-            .mobile-actions-trigger {
-                cursor: pointer;
-            }
-
-            /* Ocultamos la cabecera de la columna de acciones en móvil */
-            .th-acciones-desktop {
-                display: none !important;
-            }
-            
-            /* Hacemos que la celda de acciones se oculte también */
-            .td-acciones-desktop {
-                display: none !important;
-            }
+            /* Eliminada toda la logica de columnas que se ocultan */
             .action-btns {
                 gap: 2px !important;
                 flex-wrap: wrap;
@@ -575,7 +558,6 @@
                                     <th scope="col" style="width: 20%;">Período</th>
                                     <th scope="col" style="width: 35%;">Detalle</th>
                                     <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -596,7 +578,6 @@
                                     <th scope="col" style="width: 23%;">Detalle</th>
                                     <th scope="col" style="width: 15%;">Costo</th>
                                     <th scope="col" style="width: 10%; text-align: center;">Activo</th>
-                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -618,7 +599,6 @@
                                     <th scope="col" style="width: 12%;">Celular</th>
                                     <th scope="col" style="width: 13%;">Residencia</th>
                                     <th scope="col" style="width: 5%; text-align: center;">Activo</th>
-                                    <th scope="col" class="th-acciones-desktop" style="width: 15%; text-align: center;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -773,6 +753,24 @@
                             onclick="document.getElementById('socios-tab').click()">
                             Ver Socios
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: ACCIONES UNIFICADAS -->
+        <div class="modal fade" id="mobileActionsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-dark text-white text-center">
+                        <h5 class="modal-title w-100 fs-4">Acciones</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body bg-light text-center py-4">
+                        <h4 id="mobileActionsSocioName" class="mb-4 text-primary fw-bold"></h4>
+                        <div id="mobileActionsContainer" class="d-flex flex-column gap-3 px-3">
+                            <!-- Los botones se inyectan dinámicamente según el tipo -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1749,38 +1747,19 @@
 
                     row.innerHTML = `
                 <td style="display:none;">${act.id}</td> 
-                <!-- Envolvemos las celdas en un div clickeable SOLO PARA MÓVIL, pero para no romper la tabla de bootstrap en desktop, usamos onclick directamente en el TR (ver abajo) -->
                 <td>${nombreSocio}</td>
                 <td>${act.nro_dni}</td>
                 <td>${act.email}</td>
                 <td>${fechaFormateada}</td>
                 <td>${act.tel_cel}</td>
                 <td>${act.lugar_residencia}</td>
-                <td class="text-center">${badgeActivo}</td>
-                <!-- Columna de acciones original (se oculta en móvil vía CSS) -->
-                <td class="text-center td-acciones-desktop">
-                    <div class="action-btns action-btns-desktop">
-                        <button class="btn btn-sm ${claseBotonUser}" onclick="event.stopPropagation(); showModal('user', '${act.id}')" ${esActivo ? '' : 'disabled'} title="Gestión de Usuario">
-                            <i class="fas fa-user-lock"></i>
-                        </button>
-                        <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); showModal('pagos', '${act.id}')" title="Gestión de Pagos">
-                            <i class="fas fa-dollar-sign"></i>
-                        </button>
-                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('socios', '${act.id}')" title="Editar Socio">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'socios', '${nombreSocioSafe}')" title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </td>`;
+                <td class="text-center">${badgeActivo}</td>`;
 
-                    // Al hacer click en cualquier parte de la fila en móvil que dispare el modal de acciones
-                    row.classList.add('mobile-actions-trigger');
+                    // Al hacer click en cualquier parte de la fila que dispare el modal de acciones
+                    row.classList.add('row-click-action');
+                    row.style.cursor = 'pointer';
                     row.onclick = function() {
-                        if (window.innerWidth <= 768) {
-                            showMobileActions(act.id, nombreSocioSafe, 'socios', esActivo);
-                        }
+                        showActionsModal(act.id, nombreSocioSafe, 'socios', esActivo);
                     };
 
                 } else if (tipoLower === 'muestra') {
@@ -1789,20 +1768,13 @@
                         <td>${act.nombre}</td>
                         <td>${act.periodo}</td>
                         <td>${act.detalle}</td>
-                        <td class="text-center">${badgeActivo}</td>
-                        <td class="text-center td-acciones-desktop">
-                            <div class="action-btns action-btns-desktop">
-                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('Muestra','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'Muestra', '${act.nombre}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                        </td>`;
+                        <td class="text-center">${badgeActivo}</td>`;
 
                     const nombreSafe = act.nombre ? act.nombre.replace(/'/g, "\\'") : 'Muestra';
-                    row.classList.add('mobile-actions-trigger');
+                    row.classList.add('row-click-action');
+                    row.style.cursor = 'pointer';
                     row.onclick = function() {
-                        if (window.innerWidth <= 768) {
-                            showMobileActions(act.id, nombreSafe, 'muestra');
-                        }
+                        showActionsModal(act.id, nombreSafe, 'muestra');
                     };
 
                 } else if (tipoLower === 'user') {
@@ -1811,13 +1783,13 @@
                         <td>${act.Apellido}</td>
                         <td>${act.Nombre}</td>
                         <td>${act.Usuario}</td>
-                        <td>${act.Permiso}</td>
-                        <td class="text-center td-acciones-desktop">
-                            <div class="action-btns action-btns-desktop">
-                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('user','${act.id}')"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'user', '${act.Usuario}')"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                        </td>`;
+                        <td>${act.Permiso}</td>`;
+                        
+                    row.classList.add('row-click-action');
+                    row.style.cursor = 'pointer';
+                    row.onclick = function() {
+                        showActionsModal(act.id, act.Usuario, 'user');
+                    };
 
                 } else {
                     row.innerHTML = `
@@ -1827,20 +1799,13 @@
                         <td>${act.titulo}</td>
                         <td>${act.detalle}</td>
                         <td>${act.costo}</td>
-                        <td class="text-center">${badgeActivo}</td>
-                        <td class="text-center td-acciones-desktop">
-                            <div class="action-btns action-btns-desktop">
-                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); showModal('Programacion','${act.id}')" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete('${act.id}', 'Programacion', '${act.titulo}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                            </div>
-                        </td>`;
+                        <td class="text-center">${badgeActivo}</td>`;
                         
                     const tituloSafe = act.titulo ? act.titulo.replace(/'/g, "\\'") : 'Programación';
-                    row.classList.add('mobile-actions-trigger');
+                    row.classList.add('row-click-action');
+                    row.style.cursor = 'pointer';
                     row.onclick = function() {
-                        if (window.innerWidth <= 768) {
-                            showMobileActions(act.id, tituloSafe, 'programacion');
-                        }
+                        showActionsModal(act.id, tituloSafe, 'programacion');
                     };
                 }
             });
@@ -1848,10 +1813,10 @@
         }
 
         /**
-         * Nueva función que abre un Modal grande con botones de acción grandes
-         * SOLAMENTE en la vista de Móvil
+         * Función que abre un Modal grande con botones de acción grandes
+         * Aplica para escritorio y móvil (Vista unificada).
          */
-        function showMobileActions(id, nombre, tipo, esActivo = true) {
+        function showActionsModal(id, nombre, tipo, esActivo = true) {
             document.getElementById('mobileActionsSocioName').textContent = nombre;
             const container = document.getElementById('mobileActionsContainer');
             
@@ -1896,6 +1861,17 @@
                     <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
                         onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'Programacion', '${nombre}')">
                         <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Programación</span>
+                    </button>
+                `;
+            } else if (tipo === 'user') {
+                container.innerHTML = `
+                    <button class="btn btn-lg btn-primary d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); showModal('user', '${id}')">
+                        <i class="fas fa-edit me-3 fa-lg"></i> <span class="fs-5">Editar Usuario</span>
+                    </button>
+                    <button class="btn btn-lg btn-danger d-flex align-items-center justify-content-center py-3" 
+                        onclick="$('#mobileActionsModal').modal('hide'); confirmDelete('${id}', 'user', '${nombre}')">
+                        <i class="fas fa-trash-alt me-3 fa-lg"></i> <span class="fs-5">Eliminar Usuario</span>
                     </button>
                 `;
             }
