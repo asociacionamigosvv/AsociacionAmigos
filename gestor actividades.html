@@ -125,19 +125,10 @@
             opacity: 1;
         }
 
-        /* Floating Action Button (Móvil) */
-        .fab-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 1000;
-            display: none;
-        }
+
 
         @media (max-width: 768px) {
-            .fab-container {
-                display: block;
-            }
+
 
             .header-info-desktop {
                 display: none;
@@ -344,14 +335,7 @@
             </div>
         </div>
 
-        <!-- Floating Action Button (Móvil) -->
-        <div class="fab-container">
-            <button class="btn btn-accent-p rounded-circle shadow-lg"
-                style="width: 60px; height: 60px; font-size: 24px;"
-                onclick="document.getElementById('btnNueva'+activeTab.charAt(0).toUpperCase() + activeTab.slice(1)).click()">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
+
 
 
         <!-- MODAL: GESTIÓN DE ELEMENTOS (Muestras, Programación, Socios) -->
@@ -385,14 +369,12 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="activo" id="activoSI"
                                             value="true" required>
-                                        <label class="form-check-label fw-bold text-emerald-500" for="activoSI">Activo
-                                            (Muestra en sitio)</label>
+                                        <label class="form-check-label fw-bold text-emerald-500" for="activoSI">Activo</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="activo" id="activoNO"
                                             value="false" required>
-                                        <label class="form-check-label fw-bold text-red-500" for="activoNO">Inactivo
-                                            (Ocultar)</label>
+                                        <label class="form-check-label fw-bold text-red-500" for="activoNO">Inactivo</label>
                                     </div>
                                 </div>
                             </div>
